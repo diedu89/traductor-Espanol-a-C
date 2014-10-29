@@ -1,0 +1,176 @@
+import java_cup.runtime.*;
+
+/* Codigo del parser, se copia integramente a la clase final.
+    Agregamos el manejo de errores. */
+parser code {:
+
+	public boolean correcto=true;
+	private SintacticoListener listener = null;
+
+	public void addListener(SintacticoListener listener){
+		this.listener = listener;
+	}
+
+	public void syntax_error(Symbol cur_token){
+		correcto = false;
+		listener.errorSintaxis(cur_token, symbl_name_from_id(cur_token.sym));
+		System.err.println("Error con token: " + symbl_name_from_id(cur_token.sym));
+	}
+
+	/* Reporte de error encontrado. */
+	public void report_error(String message, Object info) {
+	  StringBuilder m = new StringBuilder("Error");
+	  if (info instanceof java_cup.runtime.Symbol) {
+	      java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
+	      if (s.left >= 0) {                
+	          m.append(" in line "+(s.left+1));
+	          if (s.right >= 0)
+	              m.append(", column "+(s.right+1));
+	      }
+	  }
+	  m.append(" : "+message);
+	  System.err.println(m);
+	  System.err.println(info);
+	}
+
+	/* Cuando se encuentra un error de donde el sistema no puede
+	  recuperarse, se lanza un error fatal. Se despliega el mensaje
+	  de error y se finaliza la ejecucion. */
+	public void report_fatal_error(String message, Object info) {
+	  report_error(message, info);
+	}
+:}
+
+non terminal PROGRAMA, MODULO, ARGUMENTOS, ARGUMENTO, BLOQUE, COMENTARIO, INSTRUCCIONES, INSTRUCCION, IF, IFELSE, FOR, MIENTRAS_T, DECLARACION, CONSTANTE, CONSTANTE_NUM, IDENTIFICADORES, EXPRESION, CONDICION, ASIGNACION, CONDICIONAL_Y, EXP_IGUALDAD, EXP_RELACIONAL, EXP_ADICION, OP_ADICION, EXP_MUL, OP_MUL, EXP_PRIMARIA, LECTURA, DESPLIEGUE;
+
+terminal TIPO, IDENTIFICADOR, CADENA, CONT_COMENT;
+terminal Integer ENTERO;
+terminal Float FLOTANTE;
+terminal Boolean BOOLEANO;
+
+/* keywords */
+terminal PROGRAMA_K,  INICIO_BLOQUE,  FIN_BLOQUE,  INICIO_COMENTARIO,  FIN_COMENTARIO,  LEER,  DESPLEGAR, DECLARAR, COMA, MODULO_K, RECIBE, DEVUELVE, VECTOR, MATRIZ, CARACTER, SI, SINO, FIN_SI, DESDE, HASTA, FIN_DESDE, MIENTRAS, FIN_MIENTRAS, OP_IGUAL, OP_MAS, OP_MENOS, OP_POR, OP_DIV, PAR_IZQ, PAR_DER, CORCHETE_IZQ, CORCHETE_DER , COMP_DIFERENTE, COMP_MAYOR, COMP_MENOR, COMP_MAYOR_IGUAL, COMP_MENOR_IGUAL, OR, AND;
+
+start with PROGRAMA;
+
+PROGRAMA 		::= 	PROGRAMA_K IDENTIFICADOR BLOQUE 
+					| 		PROGRAMA_K IDENTIFICADOR BLOQUE MODULO
+					;
+
+MODULO			::= 	MODULO_K IDENTIFICADOR RECIBE ARGUMENTOS DEVUELVE TIPO BLOQUE
+					;
+
+ARGUMENTOS		::= 	ARGUMENTO 
+					| 		ARGUMENTOS COMA ARGUMENTO
+					;
+
+ARGUMENTO		::= 	IDENTIFICADOR PAR_IZQ TIPO PAR_DER
+					;
+
+BLOQUE 			::= 	INICIO_BLOQUE INSTRUCCIONES FIN_BLOQUE 
+					| 		COMENTARIO BLOQUE 
+					| 		COMENTARIO
+					;
+
+INSTRUCCION 	::= 	COMENTARIO INSTRUCCION 
+					| 		ASIGNACION 
+					| 		IF 
+					| 		IFELSE 
+					| 		FOR 
+					| 		MIENTRAS_T 
+					| 		LECTURA 
+					| 		DESPLIEGUE 
+					| 		DECLARACION
+					;
+
+INSTRUCCIONES	::= 	INSTRUCCION 
+					|		INSTRUCCIONES INSTRUCCION
+					;
+
+DECLARACION		::= 	DECLARAR IDENTIFICADORES TIPO 
+					|		DECLARAR VECTOR IDENTIFICADOR CORCHETE_IZQ ENTERO CORCHETE_DER TIPO 
+					|		DECLARAR MATRIZ IDENTIFICADOR CORCHETE_IZQ ENTERO CORCHETE_DER TIPO
+					;
+
+COMENTARIO		::= 	INICIO_COMENTARIO CONT_COMENT FIN_COMENTARIO
+					;
+
+CONSTANTE		::= 	CARACTER 
+					|		CADENA 
+					|		BOOLEANO 
+					|		CONSTANTE_NUM
+					;
+
+IDENTIFICADORES::= 	IDENTIFICADOR 
+					|		IDENTIFICADORES COMA IDENTIFICADOR
+					;
+					
+CONSTANTE_NUM	::= 	ENTERO 
+					|		FLOTANTE
+					;
+
+ASIGNACION		::= 	IDENTIFICADOR OP_IGUAL EXPRESION
+					;
+
+EXPRESION		::= 	CONDICION 
+					;
+
+CONDICION		::= 	CONDICIONAL_Y 
+					|		CONDICION OR CONDICIONAL_Y
+					;
+
+CONDICIONAL_Y	::= 	EXP_IGUALDAD 
+					|		CONDICIONAL_Y AND EXP_IGUALDAD
+					;
+
+EXP_IGUALDAD 	::= 	EXP_RELACIONAL 
+					|		EXP_IGUALDAD OP_IGUAL EXP_RELACIONAL 
+					|		EXP_IGUALDAD COMP_DIFERENTE EXP_RELACIONAL
+					;
+
+EXP_RELACIONAL	::= 	EXP_RELACIONAL COMP_MENOR EXP_ADICION 
+					|		EXP_RELACIONAL COMP_MAYOR EXP_ADICION 
+					|		EXP_RELACIONAL COMP_MENOR_IGUAL EXP_ADICION 
+					|		EXP_RELACIONAL COMP_MAYOR_IGUAL EXP_ADICION
+					|		EXP_ADICION
+					;
+
+EXP_ADICION		::= 	EXP_MUL 
+					|		EXP_ADICION OP_ADICION EXP_MUL 
+					;
+
+OP_ADICION		::=	OP_MAS
+					|		OP_MENOS
+					;
+
+EXP_MUL			::= 	EXP_PRIMARIA
+					|		EXP_MUL OP_MUL EXP_PRIMARIA 
+					;
+
+OP_MUL			::=	OP_POR
+					|		OP_DIV
+					;
+
+EXP_PRIMARIA	::=	CONSTANTE_NUM 
+					|		PAR_IZQ EXPRESION PAR_DER
+					|		IDENTIFICADOR
+					;
+
+IFELSE			::= 	SI CONDICION INSTRUCCIONES SINO INSTRUCCIONES FIN_SI
+					;
+
+IF					::= 	SI CONDICION INSTRUCCIONES FIN_SI
+					;
+
+FOR				::= 	DESDE IDENTIFICADOR OP_IGUAL ENTERO HASTA ENTERO INSTRUCCIONES FIN_DESDE
+					;
+
+LECTURA			::= 	LEER IDENTIFICADORES
+					;
+
+MIENTRAS_T		::= 	MIENTRAS CONDICION INSTRUCCIONES FIN_MIENTRAS
+					;
+
+DESPLIEGUE		::= 	DESPLEGAR IDENTIFICADORES 
+					|		DESPLEGAR CONSTANTE 
+					;
