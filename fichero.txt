@@ -1,0 +1,12 @@
+PROGRAMA distribucion
+
+COMENTA distribuir una bonificacion de fin de lalalla FIN_COM
+
+INICIO
+
+DECLARAR bonificacion FLOTANTE
+DECLARAR nparticipantes, resultado FLOTANTE
+
+DESPLEGAR "Digitar los valores"
+
+FIN
