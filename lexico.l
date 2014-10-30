@@ -1,11 +1,12 @@
 package compilador;
 import java_cup.runtime.*;
 
+//clases para implementar observers en analizadores para disparar acciones en los eventos de los analisis
+
 interface TokenListener {
     public void encuentraToken(String tokenName, Symbol tokenValue, String texto);
     public void errorToken(int fila, int columna, String texto);
 }
-
 
 interface SintacticoListener {
    public void errorSintaxis(Symbol cur_token, String tokenName);
@@ -28,12 +29,7 @@ interface SintacticoListener {
 
 %{
 
-/**
- * Return a new Symbol with the given token id, the current line and column
- * numbers, and the given token value.  The value is used for tokens such as
- * identifiers and numbers.
- */
-
+//metodo para poder agregar listener
 TokenListener listener;
 public void addListener(TokenListener listener){
    this.listener = listener;

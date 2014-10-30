@@ -4,12 +4,18 @@
  * and open the template in the editor.
  */
 
-package compilador;
+package compilador.token;
+
+import compilador.sym;
 
 /**
  *
  * @author diego
  */
-public class TablaSimbolos {
+public class Caracter extends Token {
+
+    public Caracter(int line, int column) {
+        super(sym.CARACTER, line, column);
+    }
     
 }
