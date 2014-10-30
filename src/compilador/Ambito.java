@@ -19,7 +19,7 @@ public class Ambito {
     
     public Ambito(Ambito padre){
         this.padre = padre;
-        tablaSimbolos = new Hashtable();
+        tablaSimbolos = new HashMap();
     }
     
     public void put(String id, Token value){
