@@ -3,19 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package compilador.instrucciones;
 
-package compilador.token;
-
-import compilador.sym;
+import compilador.Ambito;
 
 /**
  *
  * @author diego
  */
-public class Flotante extends Token{
+public class Expresion {
+    public String valor;
+    public String tipo;
     
-    public Flotante( int line, int column) {
-        super(sym.FLOTANTE, line, column);
+    public Expresion( String valor, String tipo){
+        
     }
-    
 }

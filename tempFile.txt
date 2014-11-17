@@ -1,11 +1,25 @@
-programa distribucion
-COMENTA distribuir una bonificacion de fin de lalalla FIN_COM
+PROGRAMA distibucion
+
+COMENTA Distribuir una bonificacion FIN_COM
+
 INICIO
+
 DECLARAR bonificacion FLOTANTE
 DECLARAR nparticipantes, resultado FLOTANTE
-DESPLEGAR "Digitar los valores"
-SI t>4
-p=0
-t=u+5
-fin_si
+
+DESPLEGAR "Digite valores"
+LEER bonificacion, nparticipantes
+
+SI nparticipantes = 0
+DESPLEGAR "numero de participantes es cero"
+DESPLEGAR "**error**"
+FIN_SI
+
+resultado=bonificacion/nparticipantes
+DESPLEGAR resultado
+FIN
+
+MODULO nombre RECIBE argumento (ENTERO) DEVUELVE ENTERO
+INICIO
+DESPLEGAR "HOLA"
 FIN

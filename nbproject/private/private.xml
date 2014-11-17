@@ -3,7 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/diego/Documentos/DesarrolloJava/Compilador/src/compilador/AnalizadorLexico.java</file>
+            <file>file:/home/diego/Documentos/DesarrolloJava/Compilador/src/compilador/instrucciones/Expresion.java</file>
+            <file>file:/home/diego/Documentos/DesarrolloJava/Compilador/src/compilador/instrucciones/Lectura.java</file>
+            <file>file:/home/diego/Documentos/DesarrolloJava/Compilador/src/compilador/Ambito.java</file>
+            <file>file:/home/diego/Documentos/DesarrolloJava/Compilador/src/compilador/sym.java</file>
+            <file>file:/home/diego/Documentos/DesarrolloJava/Compilador/src/compilador/Identificador.java</file>
+            <file>file:/home/diego/Documentos/DesarrolloJava/Compilador/src/compilador/AnalizadorSintactico.java</file>
+            <file>file:/home/diego/Documentos/DesarrolloJava/Compilador/src/compilador/instrucciones/Declaracion.java</file>
         </group>
     </open-files>
 </project-private>

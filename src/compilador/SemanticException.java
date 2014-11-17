@@ -3,19 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-package compilador.token;
-
-import compilador.sym;
+package compilador;
 
 /**
  *
  * @author diego
  */
-public class Caracter extends Token {
-
-    public Caracter(int line, int column) {
-        super(sym.CARACTER, line, column);
+public class SemanticException extends Exception{
+    public SemanticException(String mensaje){
+        super(mensaje);
     }
-    
 }

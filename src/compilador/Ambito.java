@@ -6,7 +6,6 @@
 
 package compilador;
 
-import compilador.token.Token;
 import java.util.HashMap;
 
 /**
@@ -15,18 +14,18 @@ import java.util.HashMap;
  */
 public class Ambito {
     public Ambito padre;
-    private HashMap<String, Token> tablaSimbolos;
+    private HashMap<String, Identificador> tablaSimbolos;
     
     public Ambito(Ambito padre){
         this.padre = padre;
         tablaSimbolos = new HashMap();
     }
     
-    public void put(String id, Token value){
+    public void put(String id, Identificador value){
         tablaSimbolos.put(id, value);
     }
     
-    public Token get(String id){
+    public Identificador get(String id){
         Ambito ambito = this;
         while(ambito != null){
             if(ambito.get(id) != null) return ambito.get(id);

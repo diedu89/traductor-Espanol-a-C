@@ -184,7 +184,7 @@ public class jfMain extends javax.swing.JFrame {
                 }
             });
                 
-            System.out.println(analizadorSintactico.debug_parse());
+            System.out.println(analizadorSintactico.parse());
             
             if(analizadorSintactico.correcto){
                 listModel.addElement("Estructura sintactica correcta");

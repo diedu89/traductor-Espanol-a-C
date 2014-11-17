@@ -1,4 +1,8 @@
 import java_cup.runtime.*;
+import java.util.LinkedList;
+import java.util.ArrayList;
+import instrucciones.*;
+import Ambito;
 
 /* Codigo del parser, se copia integramente a la clase final.
     Agregamos el manejo de errores. */
@@ -6,6 +10,9 @@ parser code {:
 
 	public boolean correcto=true;
 	private SintacticoListener listener = null;
+	private String tipo = "";
+   private LinkedList<String> variableQueue;
+   private Ambito ambito;
 
 	public void addListener(SintacticoListener listener){
 		this.listener = listener;
@@ -39,9 +46,27 @@ parser code {:
 	public void report_fatal_error(String message, Object info) {
 	  report_error(message, info);
 	}
+
+	private Identificador buscarId(Ambito ambito, String identificador, String tipo) throws SemanticException{
+		Identificador id = ambito.get(identificador);
+		if(id == null){
+			throw new SemanticException("La variable o funcion " + identificador + " no esta declarada");
+		}
+
+		if( !( id.tipoId.equals(tipo) ) ){
+			throw new SemanticException("El identificador corresponde a un dato " + id.tipoId);
+		}
+
+		return Identificador;
+	}
 :}
 
-non terminal PROGRAMA, MODULO, ARGUMENTOS, ARGUMENTO, BLOQUE, COMENTARIO, INSTRUCCIONES, INSTRUCCION, IF, IFELSE, FOR, MIENTRAS_T, DECLARACION, CONSTANTE, CONSTANTE_NUM, IDENTIFICADORES, EXPRESION, CONDICION, ASIGNACION, CONDICIONAL_Y, EXP_IGUALDAD, EXP_RELACIONAL, EXP_ADICION, OP_ADICION, EXP_MUL, OP_MUL, EXP_PRIMARIA, LECTURA, DESPLIEGUE;
+init with {:
+	ambito = null;
+	variableQueue = new LinkedList<String>();
+:}
+
+non terminal PROGRAMA, MODULO, ARGUMENTOS, ARGUMENTO, BLOQUE, COMENTARIO, INSTRUCCIONES, INSTRUCCION, IF, IFELSE, FOR, MIENTRAS_T, DECLARACION, CONSTANTE_NUM, IDENTIFICADORES, EXPRESION, ASIGNACION, CONDICIONAL_Y, EXP_IGUALDAD, EXP_RELACIONAL, EXP_ADICION, OP_ADICION, EXP_MUL, OP_MUL, EXP_PRIMARIA, LECTURA, DESPLIEGUE, EXPRESIONES;
 
 terminal TIPO, IDENTIFICADOR, CADENA, CONT_COMENT;
 terminal Integer ENTERO;
@@ -53,7 +78,7 @@ terminal PROGRAMA_K,  INICIO_BLOQUE,  FIN_BLOQUE,  INICIO_COMENTARIO,  FIN_COMEN
 
 start with PROGRAMA;
 
-PROGRAMA 		::= 	PROGRAMA_K IDENTIFICADOR BLOQUE 
+PROGRAMA 		::= 	PROGRAMA_K IDENTIFICADOR BLOQUE:b {: RESULT = b; :}
 					| 		PROGRAMA_K IDENTIFICADOR BLOQUE MODULO
 					;
 
@@ -67,8 +92,10 @@ ARGUMENTOS		::= 	ARGUMENTO
 ARGUMENTO		::= 	IDENTIFICADOR PAR_IZQ TIPO PAR_DER
 					;
 
-BLOQUE 			::= 	INICIO_BLOQUE INSTRUCCIONES FIN_BLOQUE 
-					| 		COMENTARIO BLOQUE 
+BLOQUE 			::= 	INICIO_BLOQUE 			{: ambito = new Ambito(ambito); :} 
+							INSTRUCCIONES:ins 	{: RESULT = new Nodo(ambito, (ArrayList<Nodo>) ins); :} 
+							FIN_BLOQUE 				{: ambito = ambito.padre; :}
+					| 		COMENTARIO BLOQUE:b 	{: RESULT = b; :} 
 					| 		COMENTARIO
 					;
 
@@ -78,99 +105,159 @@ INSTRUCCION 	::= 	COMENTARIO INSTRUCCION
 					| 		IFELSE 
 					| 		FOR 
 					| 		MIENTRAS_T 
-					| 		LECTURA 
-					| 		DESPLIEGUE 
-					| 		DECLARACION
+					| 		LECTURA:l 						{: RESULT = l; :}
+					| 		DESPLIEGUE:d 					{: RESULT = d; :}
+					| 		DECLARACION:d 					{: RESULT = d; :}
 					;
 
-INSTRUCCIONES	::= 	INSTRUCCION 
-					|		INSTRUCCIONES INSTRUCCION
+INSTRUCCIONES	::= 	INSTRUCCION:i 
+							{: 
+								ArrayList<Nodo> nodos = new ArrayList<Nodo>();
+								nodos.add((Nodo) i);
+								RESULT = nodos;
+							:}
+					|		INSTRUCCIONES:ins INSTRUCCION:i
+							{: 
+								((ArrayList<Nodo>) ins).add((Nodo) i);
+								RESULT = ins;
+							:}
 					;
 
-DECLARACION		::= 	DECLARAR IDENTIFICADORES TIPO 
-					|		DECLARAR VECTOR IDENTIFICADOR CORCHETE_IZQ ENTERO CORCHETE_DER TIPO 
-					|		DECLARAR MATRIZ IDENTIFICADOR CORCHETE_IZQ ENTERO CORCHETE_DER TIPO
+DECLARACION		::= 	DECLARAR IDENTIFICADORES:ids TIPO:t
+	      				{:  
+	      					for(String variableName: (ArrayList<String>) ids)
+	      						ambito.put(variableName, new Identificador(variableName, (String) t));
+
+	      					RESULT = new Declaracion(ambito, (String) t, (ArrayList<String>) ids);
+	      				:} 
+					|		DECLARAR VECTOR IDENTIFICADOR:id CORCHETE_IZQ ENTERO:f CORCHETE_DER TIPO:t
+							{:
+								ambito.put((String) id, new Identificador((String) id, (String) t, (int) f) );
+								RESULT = new Declaracion(ambito, (String) t, (String) id);
+							:} 
+					|		DECLARAR MATRIZ IDENTIFICADOR:id CORCHETE_IZQ ENTERO:f COMA ENTERO:c CORCHETE_DER TIPO:t
+							{:
+								ambito.put((String) id, new Identificador((String) id, (String) t, (int) f, (int) c) );
+								RESULT = new Declaracion(ambito, (String) t, (String) id);
+							:}
 					;
 
 COMENTARIO		::= 	INICIO_COMENTARIO CONT_COMENT FIN_COMENTARIO
 					;
 
-CONSTANTE		::= 	CARACTER 
-					|		CADENA 
-					|		BOOLEANO 
-					|		CONSTANTE_NUM
-					;
-
-IDENTIFICADORES::= 	IDENTIFICADOR 
-					|		IDENTIFICADORES COMA IDENTIFICADOR
+IDENTIFICADORES::= 	IDENTIFICADOR:id 
+							{: 
+								ArrayList<String> identificadores = new ArrayList<String>();
+								identificadores.add((String) id);
+								RESULT = identificadores;
+							:}
+					|		IDENTIFICADORES:ids COMA IDENTIFICADOR:id 
+							{: 
+								((ArrayList<String>) ids).add((String) id);
+								variableQueue.add((String) id); 
+								RESULT = ids;
+							:}
 					;
 					
-CONSTANTE_NUM	::= 	ENTERO 
-					|		FLOTANTE
+CONSTANTE_NUM	::= 	ENTERO:e 	{: RESULT = new Expresion(String.valueOf(e), "ENTERO"); :}
+					|		FLOTANTE:f 	{: RESULT = new Expresion(String.valueOf(f), "FLOTANTE"); :}
 					;
 
 ASIGNACION		::= 	IDENTIFICADOR OP_IGUAL EXPRESION
+							{:
+								
+							:}
 					;
 
-EXPRESION		::= 	CONDICION 
+EXPRESION		::= 	CONDICIONAL_Y:cy 								{: RESULT = (Expresion) cy; :}
+					|		EXPRESION:e OR CONDICIONAL_Y:cy			{: RESULT = new ExpresionCondicional( (Expresion) cy, "||", (Expresion) ei; :}
 					;
 
-CONDICION		::= 	CONDICIONAL_Y 
-					|		CONDICION OR CONDICIONAL_Y
+CONDICIONAL_Y	::= 	EXP_IGUALDAD:ei 								{: RESULT = (Expresion) ei; :}
+					|		CONDICIONAL_Y:cy AND EXP_IGUALDAD:ei 	{: RESULT = new ExpresionCondicional( (Expresion) cy, "&&", (Expresion) ei; :}
 					;
 
-CONDICIONAL_Y	::= 	EXP_IGUALDAD 
-					|		CONDICIONAL_Y AND EXP_IGUALDAD
+//comprobacion de tipo
+EXP_IGUALDAD 	::= 	EXP_RELACIONAL:er 											{: RESULT = (Expresion) er; :}
+					|		EXP_IGUALDAD:e OP_IGUAL EXP_RELACIONAL:er 			{: RESULT = new ExpresionRelacional((Expresion) e, "==", (Expresion) er); :}
+					|		EXP_IGUALDAD:e COMP_DIFERENTE EXP_RELACIONAL:er 	{: RESULT = new ExpresionRelacional((Expresion) e, "!=", (Expresion) er); :}
+					;
+//comprobacion de tipo
+EXP_RELACIONAL	::= 	EXP_RELACIONAL:e COMP_MENOR EXP_ADICION:ea 			{: RESULT = new ExpresionRelacional((Expresion) e, "<" , (Expresion) ea); :}		 
+					|		EXP_RELACIONAL:e COMP_MAYOR EXP_ADICION:ea 			{: RESULT = new ExpresionRelacional((Expresion) e, ">" , (Expresion) ea); :}		 
+					|		EXP_RELACIONAL:e COMP_MENOR_IGUAL EXP_ADICION:ea 	{: RESULT = new ExpresionRelacional((Expresion) e, "<=", (Expresion) ea); :}				 
+					|		EXP_RELACIONAL:e COMP_MAYOR_IGUAL EXP_ADICION:ea 	{: RESULT = new ExpresionRelacional((Expresion) e, ">=", (Expresion) ea); :}		
+					|		EXP_ADICION:e													{: RESULT = (Expresion) e; :}
 					;
 
-EXP_IGUALDAD 	::= 	EXP_RELACIONAL 
-					|		EXP_IGUALDAD OP_IGUAL EXP_RELACIONAL 
-					|		EXP_IGUALDAD COMP_DIFERENTE EXP_RELACIONAL
+EXP_ADICION		::= 	EXP_MUL:e 											{: RESULT = (String) e; :}
+					|		EXP_ADICION:ea OP_ADICION:op EXP_MUL:em 	{: RESULT = new ExpresionAritmetica( (Expresion) em, (String) op, (Expresion)ep); :} //comprobacion de tipo
 					;
 
-EXP_RELACIONAL	::= 	EXP_RELACIONAL COMP_MENOR EXP_ADICION 
-					|		EXP_RELACIONAL COMP_MAYOR EXP_ADICION 
-					|		EXP_RELACIONAL COMP_MENOR_IGUAL EXP_ADICION 
-					|		EXP_RELACIONAL COMP_MAYOR_IGUAL EXP_ADICION
-					|		EXP_ADICION
+OP_ADICION		::=	OP_MAS:o 	{: RESULT = "+"; :}
+					|		OP_MENOS:o 	{: RESULT = "-"; :}
 					;
 
-EXP_ADICION		::= 	EXP_MUL 
-					|		EXP_ADICION OP_ADICION EXP_MUL 
+EXP_MUL			::= 	EXP_PRIMARIA:e 								{: RESULT = (Expresion) e; :}
+					|		EXP_MUL:em OP_MUL:op EXP_PRIMARIA:ep 	{: RESULT = new ExpresionAritmetica( (Expresion) em, (String) op, (Expresion)ep); :} //comprobacion de tipo
 					;
 
-OP_ADICION		::=	OP_MAS
-					|		OP_MENOS
+OP_MUL			::=	OP_POR:op	{: RESULT = "*"; :}	
+					|		OP_DIV:op 	{: RESULT = "/"; :}  
 					;
 
-EXP_MUL			::= 	EXP_PRIMARIA
-					|		EXP_MUL OP_MUL EXP_PRIMARIA 
+EXP_PRIMARIA	::=	CONSTANTE_NUM:c 																	{: RESULT = (Expresion) c; :}
+					|		PAR_IZQ EXPRESION:e PAR_DER													{: RESULT = new Expresion("( " + ((Expresion) e).valor + " )", ((Expresion) e).tipo) ; :}
+					|		IDENTIFICADOR:id																	
+							{: 
+								Identificador identificador = buscarId(ambito, (String) id, "primitivo");
+								RESULT = new Expresion((String) id, identificador.tipoDato); 
+							:} //comprobacion si existe
+					|		IDENTIFICADOR:id CORCHETE_IZQ ENTERO:i CORCHETE_DER					
+							{: 
+								Identificador identificador = buscarId(ambito, (String) id, "arreglo");
+								RESULT = new Expresion((String) id + "[" + String.valueOf(i) + "]", identificador.tipoDato); 
+							:} //comprobacion si existe
+					|		IDENTIFICADOR:id CORCHETE_IZQ ENTERO:i COMA ENTERO:j CORCHETE_DER	
+							{: 
+								Identificador identificador = buscarId(ambito, (String) id, "matriz");
+								RESULT = new Expresion((String) id + "[" + String.valueOf(i) + "]" + "[" + String.valueOf(j) + "]", identificador.tipoDato); 
+							:} //comprobacion si existe
+					|		CADENA:c																				{: RESULT = new Expresion((String)c,"CADENA"); :}
+					|	 	CARACTER:c 																			{: RESULT = new Expresion((String)c,"CARACTER"); :}
+					|		BOOLEANO:b 																			{: RESULT = new Expresion((b)?"1":"0","BOOLEANO"); :}
 					;
 
-OP_MUL			::=	OP_POR
-					|		OP_DIV
+IFELSE			::= 	SI EXPRESION INSTRUCCIONES SINO INSTRUCCIONES FIN_SI
 					;
 
-EXP_PRIMARIA	::=	CONSTANTE_NUM 
-					|		PAR_IZQ EXPRESION PAR_DER
-					|		IDENTIFICADOR
-					;
-
-IFELSE			::= 	SI CONDICION INSTRUCCIONES SINO INSTRUCCIONES FIN_SI
-					;
-
-IF					::= 	SI CONDICION INSTRUCCIONES FIN_SI
+IF					::= 	SI EXPRESION INSTRUCCIONES FIN_SI
 					;
 
 FOR				::= 	DESDE IDENTIFICADOR OP_IGUAL ENTERO HASTA ENTERO INSTRUCCIONES FIN_DESDE
 					;
 
-LECTURA			::= 	LEER IDENTIFICADORES
+LECTURA			::= 	LEER IDENTIFICADORES:ids {: RESULT = new Lectura(ambito, (ArrayList<String>) ids); :}
 					;
 
-MIENTRAS_T		::= 	MIENTRAS CONDICION INSTRUCCIONES FIN_MIENTRAS
+MIENTRAS_T		::= 	MIENTRAS EXPRESION INSTRUCCIONES FIN_MIENTRAS
 					;
 
-DESPLIEGUE		::= 	DESPLEGAR IDENTIFICADORES 
-					|		DESPLEGAR CONSTANTE 
+DESPLIEGUE		::= 	DESPLEGAR EXPRESIONES:exps
+							{:
+								RESULT = new Despliegue(ambito, (ArrayList<Expresion>)exps);
+							:}
+					;
+
+EXPRESIONES		::=	EXPRESION:e
+							{: 
+								ArrayList<Expresion> exps = new ArrayList<Expresion>();
+								exps.add((Expresion)e);
+								RESULT =  exps;
+							:}
+					|		EXPRESIONES:exps COMA EXPRESION:v
+							{:
+								((ArrayList<Expresion>) exps).add((Expresion)v);
+								RESULT = exps;
+							:}
 					;

@@ -29,23 +29,23 @@ interface SintacticoListener {
 
 %{
 
-//metodo para poder agregar listener
-TokenListener listener;
-public void addListener(TokenListener listener){
-   this.listener = listener;
-}
+	//metodo para poder agregar listener
+	TokenListener listener;
+	public void addListener(TokenListener listener){
+	   this.listener = listener;
+	}
 
-Symbol newToken(int tokenId, String tokenName) {
-	Symbol symbol = new Symbol(tokenId, yyline, yycolumn);
-	listener.encuentraToken(tokenName, symbol, yytext());
-   return new Symbol(tokenId, yyline, yycolumn);
-}
+	Symbol newToken(int tokenId, String tokenName) {
+		Symbol symbol = new Symbol(tokenId, yyline, yycolumn);
+		listener.encuentraToken(tokenName, symbol, yytext());
+	   return new Symbol(tokenId, yyline, yycolumn, tokenId);
+	}
 
-Symbol newToken(int tokenId, String tokenName, Object value) {
-	Symbol symbol = new Symbol(tokenId, yyline, yycolumn, value);
-	listener.encuentraToken(tokenName, symbol, yytext());
-   return new Symbol(tokenId, yyline, yycolumn, value);
-}
+	Symbol newToken(int tokenId, String tokenName, Object value) {
+		Symbol symbol = new Symbol(tokenId, yyline, yycolumn, value);
+		listener.encuentraToken(tokenName, symbol, yytext());
+	   return new Symbol(tokenId, yyline, yycolumn, value);
+	}
 
 %}
 
@@ -59,8 +59,8 @@ DIGITO          = [0-9]
 ALFANUMERICO    = {LETRA}|{DIGITO}
 OTRO            = [_]
 IDENTIFICADOR   = {LETRA}({ALFANUMERICO}|{OTRO})*
-ENTERO          = {DIGITO_NO_CERO}{DIGITO}*
-FLOAT        = {ENTERO}\.{DIGITO}*
+ENTERO          = {DIGITO_NO_CERO}{DIGITO}* | {DIGITO}
+FLOAT 			 = {ENTERO}\.{DIGITO}*
 CHAR            = '.'
 COMENTARIO      = COMENTA.*FIN_COM
 BLANCO          = [ \n\t]
@@ -87,10 +87,10 @@ MATRIZ | matriz 					{ return newToken(sym.MATRIZ, "MATRIZ"); }
 MODULO | modulo	    			{ return newToken(sym.MODULO_K, "MODULO_K"); }
 RECIBE | recibe	    			{ return newToken(sym.RECIBE, "RECIBE"); }
 DEVUELVE | devuelve     		{ return newToken(sym.DEVUELVE, "DEVUELVE"); }
-ENTERO | entero	    			{ return newToken(sym.TIPO, "ENTERO"); }
-FLOTANTE | flotante     		{ return newToken(sym.TIPO, "FLOTANTE"); }
-BOOLEANO | booleano     		{ return newToken(sym.TIPO, "BOOLEANO"); }
-CARACTER | caracter     		{ return newToken(sym.TIPO, "CARACTER"); }
+ENTERO | entero	    			{ return newToken(sym.TIPO, "ENTERO", yytext().toUpperCase()); }
+FLOTANTE | flotante     		{ return newToken(sym.TIPO, "FLOTANTE", yytext().toUpperCase()); }
+BOOLEANO | booleano     		{ return newToken(sym.TIPO, "BOOLEANO", yytext().toUpperCase()); }
+CARACTER | caracter     		{ return newToken(sym.TIPO, "CARACTER", yytext().toUpperCase()); }
 SI | si 		    					{ return newToken(sym.SI, "SI"); }
 SINO | sino 		    			{ return newToken(sym.SINO, "SINO"); }
 FIN_SI | fin_si       			{ return newToken(sym.FIN_SI, "FIN_SI"); }
@@ -105,10 +105,10 @@ O | o 		 						{ return newToken(sym.OR, "OR"); }
 Y | y			 						{ return newToken(sym.AND, "AND"); }
 
 /*  */
-{ENTERO}    	 { return newToken(sym.ENTERO, "ENTERO", new Integer(yytext())); }
-{FLOAT}    	 	 { return newToken(sym.FLOTANTE, "FLOTANTE", new Double(yytext()) ); }
-{CHAR}    	 	 { return newToken(sym.CARACTER, "CARACTER", new Character(yytext().charAt(1))); }
-{BOOL}    	 	 { return newToken(sym.BOOLEANO, "BOOLEANO"); }
+{ENTERO}    	 { return newToken(sym.ENTERO, "ENTERO", yytext()); }
+{FLOAT}    	 	 { return newToken(sym.FLOTANTE, "FLOTANTE", yytext()); }
+{CHAR}    	 	 { return newToken(sym.CARACTER, "CARACTER", yytext()); }
+{BOOL}    	 	 { return newToken(sym.BOOLEANO, "BOOLEANO", yytext().toUpperCase()); }
 {CADENA}			 { return newToken(sym.CADENA, "CADENA", yytext()); }
 
 {IDENTIFICADOR} { return newToken(sym.IDENTIFICADOR, "IDENTIFICADOR", yytext()); }
