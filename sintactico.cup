@@ -1,8 +1,8 @@
 import java_cup.runtime.*;
 import java.util.LinkedList;
 import java.util.ArrayList;
-import instrucciones.*;
-import Ambito;
+import compilador.instrucciones.*;
+import compilador.Ambito;
 
 /* Codigo del parser, se copia integramente a la clase final.
     Agregamos el manejo de errores. */
@@ -11,7 +11,6 @@ parser code {:
 	public boolean correcto=true;
 	private SintacticoListener listener = null;
 	private String tipo = "";
-   private LinkedList<String> variableQueue;
    private Ambito ambito;
 
 	public void addListener(SintacticoListener listener){
@@ -47,26 +46,76 @@ parser code {:
 	  report_error(message, info);
 	}
 
-	private Identificador buscarId(Ambito ambito, String identificador, String tipo) throws SemanticException{
-		Identificador id = ambito.get(identificador);
+	private Identificador buscarId(String identificador, String tipo, Boolean propagar) throws SemanticException{
+		Identificador id = ambito.get(identificador, propagar);
 		if(id == null){
-			throw new SemanticException("La variable o funcion " + identificador + " no esta declarada");
+			throw new SemanticException("La variable o funcion " + identificador + " no esta declarada", this.cur_token);
 		}
 
-		if( !( id.tipoId.equals(tipo) ) ){
-			throw new SemanticException("El identificador corresponde a un dato " + id.tipoId);
+		if( !tipo.equals("") && !( id.tipoId.equals(tipo) ) ){
+			throw new SemanticException("El identificador corresponde a un dato " + id.tipoId, this.cur_token);
 		}
 
-		return Identificador;
+		return id;
 	}
+
+	private Identificador buscarId(String identificador, int fila, Boolean propagar) throws SemanticException{
+		Identificador id = buscarId(identificador, "arreglo", propagar);
+
+		if(id.filas <= fila)
+			throw new SemanticException("Indice " + fila + " fuera del limite del arreglo " + id.identificador + ", dimension: " + id.filas, this.cur_token);
+
+		return id;
+	}
+
+	private Identificador buscarId(String identificador, int fila, int columna, Boolean propagar) throws SemanticException{
+		Identificador id = buscarId(identificador, "matriz", propagar);
+
+		if(id.filas <= fila)
+			throw new SemanticException("Indice " + fila + " fuera del limite de la matriz " + id.identificador + ", dimension: " + id.filas, this.cur_token);
+
+		if(id.filas <= fila)
+			throw new SemanticException("Indice " + columna + " fuera del limite de la matriz " + id.identificador + ", dimension: " + id.columnas, this.cur_token);
+
+		return id;
+	}
+
+
+	private Expresion expresionAritmetica(Expresion op1, String operador, Expresion op2) throws SemanticException {
+	  if(!(op1.tipo.equals("FLOTANTE") || op1.tipo.equals("ENTERO")))
+	      throw new SemanticException("El operador " + operador + " no puede aplicarse a un tipo " + op1.tipo , this.cur_token);
+	  if(!(op2.tipo.equals("FLOTANTE") || op2.tipo.equals("ENTERO")))
+	      throw new SemanticException("El operador " + operador + " no puede aplicarse a un tipo " + op2.tipo , this.cur_token);
+	  
+	  return new Expresion(op1.valor + " " + operador + " " + op2.valor, (op1.tipo.equals("FLOTANTE") || op2.tipo.equals("FLOTANTE")) ? "FLOTANTE" : "ENTERO");
+	}
+
+	private Expresion expresionCondicional(Expresion op1, String operador, Expresion op2) throws SemanticException {
+	  if( !(op1.tipo.equals("BOOLEANO") && op2.tipo.equals("BOOLEANO")) )
+	      throw new SemanticException("El operador " + operador + " no puede aplicarse a un tipo de dato CADENA" , this.cur_token);
+	  
+	  return new Expresion(op1.valor + " " + operador + " " + op2.valor, "BOOLEANO");
+	}
+
+	private Expresion expresionRelacional(Expresion op1, String operador, Expresion op2) throws SemanticException{
+	  if(op1.tipo.equals("CADENA") || op2.tipo.equals("CADENA"))
+	      throw new SemanticException("El operador " + operador + " no puede aplicarse a un tipo de dato CADENA" , this.cur_token);
+	  if(
+	      (op1.tipo.equals("BOOLEANO") && !op2.tipo.equals("BOOLEANO")) || 
+	      (!op1.tipo.equals("BOOLEANO") && op2.tipo.equals("BOOLEANO"))
+	    )
+	      throw new SemanticException("No se puede comparar un tipo de dato " + op1.tipo + " y tipo de dato " + op2.tipo , this.cur_token);
+	  
+	  return new Expresion(op1.valor + " " + operador + " " + op2.valor, "BOOLEANO");
+	}
+
 :}
 
 init with {:
-	ambito = null;
-	variableQueue = new LinkedList<String>();
+	ambito = new Ambito(null);
 :}
 
-non terminal PROGRAMA, MODULO, ARGUMENTOS, ARGUMENTO, BLOQUE, COMENTARIO, INSTRUCCIONES, INSTRUCCION, IF, IFELSE, FOR, MIENTRAS_T, DECLARACION, CONSTANTE_NUM, IDENTIFICADORES, EXPRESION, ASIGNACION, CONDICIONAL_Y, EXP_IGUALDAD, EXP_RELACIONAL, EXP_ADICION, OP_ADICION, EXP_MUL, OP_MUL, EXP_PRIMARIA, LECTURA, DESPLIEGUE, EXPRESIONES;
+non terminal PROGRAMA, MODULO, ARGUMENTOS, ARGUMENTO, BLOQUE, COMENTARIO, INSTRUCCIONES, INSTRUCCION, IF, IFELSE, FOR, MIENTRAS_T, DECLARACION, CONSTANTE_NUM, IDENTIFICADORES, EXPRESION, VARIABLE, VARIABLES, ASIGNACION, CONDICIONAL_Y, EXP_IGUALDAD, EXP_RELACIONAL, EXP_ADICION, OP_ADICION, EXP_MUL, OP_MUL, EXP_PRIMARIA, LECTURA, DESPLIEGUE, EXPRESIONES;
 
 terminal TIPO, IDENTIFICADOR, CADENA, CONT_COMENT;
 terminal Integer ENTERO;
@@ -78,7 +127,7 @@ terminal PROGRAMA_K,  INICIO_BLOQUE,  FIN_BLOQUE,  INICIO_COMENTARIO,  FIN_COMEN
 
 start with PROGRAMA;
 
-PROGRAMA 		::= 	PROGRAMA_K IDENTIFICADOR BLOQUE:b {: RESULT = b; :}
+PROGRAMA 		::= 	PROGRAMA_K IDENTIFICADOR BLOQUE:b {: RESULT = new Funcion("main", (Bloque) b, "void"); :}
 					| 		PROGRAMA_K IDENTIFICADOR BLOQUE MODULO
 					;
 
@@ -93,18 +142,18 @@ ARGUMENTO		::= 	IDENTIFICADOR PAR_IZQ TIPO PAR_DER
 					;
 
 BLOQUE 			::= 	INICIO_BLOQUE 			{: ambito = new Ambito(ambito); :} 
-							INSTRUCCIONES:ins 	{: RESULT = new Nodo(ambito, (ArrayList<Nodo>) ins); :} 
+							INSTRUCCIONES:ins 	{: RESULT = new Bloque((ArrayList<Nodo>) ins); :} 
 							FIN_BLOQUE 				{: ambito = ambito.padre; :}
 					| 		COMENTARIO BLOQUE:b 	{: RESULT = b; :} 
 					| 		COMENTARIO
 					;
 
-INSTRUCCION 	::= 	COMENTARIO INSTRUCCION 
-					| 		ASIGNACION 
-					| 		IF 
-					| 		IFELSE 
-					| 		FOR 
-					| 		MIENTRAS_T 
+INSTRUCCION 	::= 	COMENTARIO INSTRUCCION:i 	{: RESULT = i; :}	
+					| 		ASIGNACION:a 					{: RESULT = a; :}
+					| 		IF:i 								{: RESULT = i; :}
+					| 		IFELSE:ie 						{: RESULT = ie; :}
+					| 		FOR:f 							{: RESULT = f; :}
+					| 		MIENTRAS_T:m 					{: RESULT = m; :}
 					| 		LECTURA:l 						{: RESULT = l; :}
 					| 		DESPLIEGUE:d 					{: RESULT = d; :}
 					| 		DECLARACION:d 					{: RESULT = d; :}
@@ -125,20 +174,32 @@ INSTRUCCIONES	::= 	INSTRUCCION:i
 
 DECLARACION		::= 	DECLARAR IDENTIFICADORES:ids TIPO:t
 	      				{:  
-	      					for(String variableName: (ArrayList<String>) ids)
-	      						ambito.put(variableName, new Identificador(variableName, (String) t));
+	      					for(String variableName: (ArrayList<String>) ids){
+									if(ambito.get(variableName, false) != null)
+										throw new SemanticException("Variable " + ( variableName ) + " ya fue declarada en el ambito actual" , this.parser.cur_token);
 
-	      					RESULT = new Declaracion(ambito, (String) t, (ArrayList<String>) ids);
+	      						ambito.put(variableName, new Identificador(variableName, (String) t));
+	      					}
+
+	      					RESULT = new Declaracion((String) t, (ArrayList<String>) ids);
 	      				:} 
 					|		DECLARAR VECTOR IDENTIFICADOR:id CORCHETE_IZQ ENTERO:f CORCHETE_DER TIPO:t
 							{:
+								if(ambito.get((String) id, false) != null)
+									throw new SemanticException("Variable " + ( (String) id ) + " ya fue declarada en el ambito actual" , this.parser.cur_token);
+
 								ambito.put((String) id, new Identificador((String) id, (String) t, (int) f) );
-								RESULT = new Declaracion(ambito, (String) t, (String) id);
+
+								RESULT = new Declaracion((String) t, (String) id + "[" + String.valueOf(f) + "]");
 							:} 
 					|		DECLARAR MATRIZ IDENTIFICADOR:id CORCHETE_IZQ ENTERO:f COMA ENTERO:c CORCHETE_DER TIPO:t
 							{:
+								if(ambito.get((String) id, false) != null)
+									throw new SemanticException("Variable " + ( (String) id ) + " ya fue declarada en el ambito actual" , this.parser.cur_token);
+
 								ambito.put((String) id, new Identificador((String) id, (String) t, (int) f, (int) c) );
-								RESULT = new Declaracion(ambito, (String) t, (String) id);
+
+								RESULT = new Declaracion((String) t, (String) id + "[" + String.valueOf(f) + "][" + String.valueOf(c) + "]");
 							:}
 					;
 
@@ -154,7 +215,6 @@ IDENTIFICADORES::= 	IDENTIFICADOR:id
 					|		IDENTIFICADORES:ids COMA IDENTIFICADOR:id 
 							{: 
 								((ArrayList<String>) ids).add((String) id);
-								variableQueue.add((String) id); 
 								RESULT = ids;
 							:}
 					;
@@ -163,35 +223,43 @@ CONSTANTE_NUM	::= 	ENTERO:e 	{: RESULT = new Expresion(String.valueOf(e), "ENTER
 					|		FLOTANTE:f 	{: RESULT = new Expresion(String.valueOf(f), "FLOTANTE"); :}
 					;
 
-ASIGNACION		::= 	IDENTIFICADOR OP_IGUAL EXPRESION
+ASIGNACION		::= 	VARIABLE:v OP_IGUAL EXPRESION:e
 							{:
-								
+								Expresion var = (Expresion) v;
+								Expresion exp = (Expresion) e;
+
+								if(!(var.tipo.equals("FLOTANTE") || var.tipo.equals("ENTERO")) &&
+									!(var.tipo.equals("FLOTANTE") || var.tipo.equals("ENTERO")) &&
+									!var.tipo.equals(exp.tipo) )
+									throw new SemanticException("No se puede asignar a una variable de tipo " + var.tipo + " una expresion de tipo " + exp.tipo , this.parser.cur_token);
+
+								RESULT = new Asignacion(var, exp);
 							:}
 					;
 
 EXPRESION		::= 	CONDICIONAL_Y:cy 								{: RESULT = (Expresion) cy; :}
-					|		EXPRESION:e OR CONDICIONAL_Y:cy			{: RESULT = new ExpresionCondicional( (Expresion) cy, "||", (Expresion) ei; :}
+					|		EXPRESION:e OR CONDICIONAL_Y:cy			{: RESULT = expresionCondicional( (Expresion) e, "||", (Expresion) cy); :}
 					;
 
 CONDICIONAL_Y	::= 	EXP_IGUALDAD:ei 								{: RESULT = (Expresion) ei; :}
-					|		CONDICIONAL_Y:cy AND EXP_IGUALDAD:ei 	{: RESULT = new ExpresionCondicional( (Expresion) cy, "&&", (Expresion) ei; :}
+					|		CONDICIONAL_Y:cy AND EXP_IGUALDAD:ei 	{: RESULT = expresionCondicional( (Expresion) cy, "&&", (Expresion) ei); :}
 					;
 
 //comprobacion de tipo
 EXP_IGUALDAD 	::= 	EXP_RELACIONAL:er 											{: RESULT = (Expresion) er; :}
-					|		EXP_IGUALDAD:e OP_IGUAL EXP_RELACIONAL:er 			{: RESULT = new ExpresionRelacional((Expresion) e, "==", (Expresion) er); :}
-					|		EXP_IGUALDAD:e COMP_DIFERENTE EXP_RELACIONAL:er 	{: RESULT = new ExpresionRelacional((Expresion) e, "!=", (Expresion) er); :}
+					|		EXP_IGUALDAD:e OP_IGUAL EXP_RELACIONAL:er 			{: RESULT = expresionRelacional((Expresion) e, "==", (Expresion) er); :}
+					|		EXP_IGUALDAD:e COMP_DIFERENTE EXP_RELACIONAL:er 	{: RESULT = expresionRelacional((Expresion) e, "!=", (Expresion) er); :}
 					;
 //comprobacion de tipo
-EXP_RELACIONAL	::= 	EXP_RELACIONAL:e COMP_MENOR EXP_ADICION:ea 			{: RESULT = new ExpresionRelacional((Expresion) e, "<" , (Expresion) ea); :}		 
-					|		EXP_RELACIONAL:e COMP_MAYOR EXP_ADICION:ea 			{: RESULT = new ExpresionRelacional((Expresion) e, ">" , (Expresion) ea); :}		 
-					|		EXP_RELACIONAL:e COMP_MENOR_IGUAL EXP_ADICION:ea 	{: RESULT = new ExpresionRelacional((Expresion) e, "<=", (Expresion) ea); :}				 
-					|		EXP_RELACIONAL:e COMP_MAYOR_IGUAL EXP_ADICION:ea 	{: RESULT = new ExpresionRelacional((Expresion) e, ">=", (Expresion) ea); :}		
+EXP_RELACIONAL	::= 	EXP_RELACIONAL:e COMP_MENOR EXP_ADICION:ea 			{: RESULT = expresionRelacional((Expresion) e, "<" , (Expresion) ea); :}		 
+					|		EXP_RELACIONAL:e COMP_MAYOR EXP_ADICION:ea 			{: RESULT = expresionRelacional((Expresion) e, ">" , (Expresion) ea); :}		 
+					|		EXP_RELACIONAL:e COMP_MENOR_IGUAL EXP_ADICION:ea 	{: RESULT = expresionRelacional((Expresion) e, "<=", (Expresion) ea); :}				 
+					|		EXP_RELACIONAL:e COMP_MAYOR_IGUAL EXP_ADICION:ea 	{: RESULT = expresionRelacional((Expresion) e, ">=", (Expresion) ea); :}		
 					|		EXP_ADICION:e													{: RESULT = (Expresion) e; :}
 					;
 
-EXP_ADICION		::= 	EXP_MUL:e 											{: RESULT = (String) e; :}
-					|		EXP_ADICION:ea OP_ADICION:op EXP_MUL:em 	{: RESULT = new ExpresionAritmetica( (Expresion) em, (String) op, (Expresion)ep); :} //comprobacion de tipo
+EXP_ADICION		::= 	EXP_MUL:e 											{: RESULT = (Expresion) e; :}
+					|		EXP_ADICION:ea OP_ADICION:op EXP_MUL:em 	{: RESULT = expresionAritmetica( (Expresion) ea, (String) op, (Expresion)em); :} //comprobacion de tipo
 					;
 
 OP_ADICION		::=	OP_MAS:o 	{: RESULT = "+"; :}
@@ -199,7 +267,7 @@ OP_ADICION		::=	OP_MAS:o 	{: RESULT = "+"; :}
 					;
 
 EXP_MUL			::= 	EXP_PRIMARIA:e 								{: RESULT = (Expresion) e; :}
-					|		EXP_MUL:em OP_MUL:op EXP_PRIMARIA:ep 	{: RESULT = new ExpresionAritmetica( (Expresion) em, (String) op, (Expresion)ep); :} //comprobacion de tipo
+					|		EXP_MUL:em OP_MUL:op EXP_PRIMARIA:ep 	{: RESULT = expresionAritmetica( (Expresion) em, (String) op, (Expresion)ep); :} //comprobacion de tipo
 					;
 
 OP_MUL			::=	OP_POR:op	{: RESULT = "*"; :}	
@@ -208,44 +276,85 @@ OP_MUL			::=	OP_POR:op	{: RESULT = "*"; :}
 
 EXP_PRIMARIA	::=	CONSTANTE_NUM:c 																	{: RESULT = (Expresion) c; :}
 					|		PAR_IZQ EXPRESION:e PAR_DER													{: RESULT = new Expresion("( " + ((Expresion) e).valor + " )", ((Expresion) e).tipo) ; :}
-					|		IDENTIFICADOR:id																	
-							{: 
-								Identificador identificador = buscarId(ambito, (String) id, "primitivo");
-								RESULT = new Expresion((String) id, identificador.tipoDato); 
-							:} //comprobacion si existe
-					|		IDENTIFICADOR:id CORCHETE_IZQ ENTERO:i CORCHETE_DER					
-							{: 
-								Identificador identificador = buscarId(ambito, (String) id, "arreglo");
-								RESULT = new Expresion((String) id + "[" + String.valueOf(i) + "]", identificador.tipoDato); 
-							:} //comprobacion si existe
-					|		IDENTIFICADOR:id CORCHETE_IZQ ENTERO:i COMA ENTERO:j CORCHETE_DER	
-							{: 
-								Identificador identificador = buscarId(ambito, (String) id, "matriz");
-								RESULT = new Expresion((String) id + "[" + String.valueOf(i) + "]" + "[" + String.valueOf(j) + "]", identificador.tipoDato); 
-							:} //comprobacion si existe
+					|		VARIABLE:var																		{: RESULT = (Expresion) var; :}
 					|		CADENA:c																				{: RESULT = new Expresion((String)c,"CADENA"); :}
 					|	 	CARACTER:c 																			{: RESULT = new Expresion((String)c,"CARACTER"); :}
 					|		BOOLEANO:b 																			{: RESULT = new Expresion((b)?"1":"0","BOOLEANO"); :}
 					;
 
-IFELSE			::= 	SI EXPRESION INSTRUCCIONES SINO INSTRUCCIONES FIN_SI
+VARIABLE			::=	IDENTIFICADOR:id																	
+							{: 
+								Identificador identificador = buscarId((String) id, "primitivo", true);
+								RESULT = new Expresion((String) id, identificador.tipoDato); 
+							:} //comprobacion si existe
+					|		IDENTIFICADOR:id CORCHETE_IZQ ENTERO:i CORCHETE_DER					
+							{: 
+								Identificador identificador = buscarId((String) id, i, true);
+								RESULT = new Expresion((String) id + "[" + String.valueOf(i) + "]", identificador.tipoDato); 
+							:} //comprobacion si existe
+					|		IDENTIFICADOR:id CORCHETE_IZQ ENTERO:i COMA ENTERO:j CORCHETE_DER	
+							{: 
+								Identificador identificador = buscarId((String) id, i, j, true);
+								RESULT = new Expresion((String) id + "[" + String.valueOf(i) + "]" + "[" + String.valueOf(j) + "]", identificador.tipoDato); 
+							:} //comprobacion si existe
 					;
 
-IF					::= 	SI EXPRESION INSTRUCCIONES FIN_SI
+
+IF					::= 	SI EXPRESION:e INSTRUCCIONES:ins FIN_SI
+							{: 
+								if( ! ((Expresion)e).tipo.equals("BOOLEANO") )
+ 									throw new SemanticException("Se esperaba una expresion condicional o valor booleano", this.parser.cur_token);
+ 									
+								RESULT = new Si( (Expresion) e, (ArrayList<Nodo>) ins); 
+							:} 
 					;
 
-FOR				::= 	DESDE IDENTIFICADOR OP_IGUAL ENTERO HASTA ENTERO INSTRUCCIONES FIN_DESDE
+IFELSE			::= 	SI EXPRESION:e INSTRUCCIONES:ins SINO INSTRUCCIONES:ins_else FIN_SI 
+							{: 
+								if( ! ((Expresion)e).tipo.equals("BOOLEANO") )
+ 									throw new SemanticException("Se esperaba una expresion condicional o valor booleano", this.parser.cur_token);
+
+								RESULT = new SiSiNo( (Expresion) e, (ArrayList<Nodo>) ins, (ArrayList<Nodo>) ins_else ); 
+							:} 
 					;
 
-LECTURA			::= 	LEER IDENTIFICADORES:ids {: RESULT = new Lectura(ambito, (ArrayList<String>) ids); :}
+FOR				::= 	DESDE
+							{: ambito = new Ambito(ambito); :} 
+							IDENTIFICADOR:id 
+							{:
+								ambito.put((String) id , new Identificador((String) id, "ENTERO"));
+							:}
+							OP_IGUAL ENTERO:desde HASTA ENTERO:hasta INSTRUCCIONES:ins FIN_DESDE
+							{: 
+								ambito = ambito.padre; 
+								RESULT = new Desde((ArrayList<Nodo>) ins, (String) id, (int) desde, (int) hasta);
+							:}
 					;
 
-MIENTRAS_T		::= 	MIENTRAS EXPRESION INSTRUCCIONES FIN_MIENTRAS
+LECTURA			::= 	LEER VARIABLES:vars 
+							{: 
+								RESULT = new Lectura((ArrayList<Expresion>) vars);
+							:}
+					;
+
+MIENTRAS_T		::= 	MIENTRAS EXPRESION:e 
+							{: 
+								if( ! ((Expresion)e).tipo.equals("BOOLEANO") )
+ 									throw new SemanticException("Se esperaba una expresion condicional o valor booleano", this.parser.cur_token);
+
+								ambito = new Ambito(ambito); 
+							:} 
+							INSTRUCCIONES:ins 
+							FIN_MIENTRAS
+							{:
+								ambito = ambito.padre;
+								RESULT = new Mientras( (ArrayList<Nodo>) ins, (Expresion) e);
+							:}
 					;
 
 DESPLIEGUE		::= 	DESPLEGAR EXPRESIONES:exps
 							{:
-								RESULT = new Despliegue(ambito, (ArrayList<Expresion>)exps);
+								RESULT = new Despliegue((ArrayList<Expresion>)exps);
 							:}
 					;
 
@@ -261,3 +370,16 @@ EXPRESIONES		::=	EXPRESION:e
 								RESULT = exps;
 							:}
 					;
+
+VARIABLES		::=	VARIABLE:e
+							{: 
+								ArrayList<Expresion> exps = new ArrayList<Expresion>();
+								exps.add((Expresion)e);
+								RESULT =  exps;
+							:}
+					|		VARIABLES:exps COMA EXPRESION:v
+							{:
+								((ArrayList<Expresion>) exps).add((Expresion)v);
+								RESULT = exps;
+							:}
+					;	

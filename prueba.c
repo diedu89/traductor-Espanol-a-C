@@ -1,8 +1,11 @@
-#include <iostream>
-int main(){
-	using namespace std;
-	int a,b,c;
-	a = 4.0/6;
-	cout<<a<<endl;
-	return 0;
+#include <stdio.h>
+
+int main()
+{
+	int neo[34];
+	int nueva[4][5];
+	for( int i = 0; i < 9;i++)
+	{
+ 	printf("%s %d \n","ESTE ES EL NUMERO ",i);
+	}
 }

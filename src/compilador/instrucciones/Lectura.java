@@ -6,6 +6,7 @@
 package compilador.instrucciones;
 
 import compilador.Ambito;
+import compilador.Identificador;
 import java.util.ArrayList;
 
 /**
@@ -13,16 +14,26 @@ import java.util.ArrayList;
  * @author diego
  */
 public class Lectura extends Nodo{
-    private ArrayList<String> identificadores;
+    private ArrayList<Expresion> identificadores;
     
-    public Lectura(Ambito ambito) {
-        super(ambito);
-        this.identificadores = new ArrayList<String>();
-    }
-    
-    public Lectura(Ambito ambito,ArrayList<String> identificadores){
-        super(ambito);
+    public Lectura(ArrayList<Expresion> identificadores){
         this.identificadores = identificadores;
     }
+
+    @Override
+    public String generarCodigo() {
+        String codigo = super.generarCodigo();
+        String valores = "";
+        codigo += "scanf(\"";
+        for(Expresion expresion: identificadores){
+            codigo += Expresion.getFormat(expresion.tipo);
+            valores += ", " + "&" + expresion.valor;        
+        }
+        codigo = codigo + "\"" + 
+                 valores + ");";
+        return codigo;
+    }
+    
+    
     
 }

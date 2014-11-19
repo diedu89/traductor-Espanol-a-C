@@ -15,8 +15,23 @@ import java.util.ArrayList;
 public class Despliegue extends Nodo{
     ArrayList<Expresion> expresiones;
     
-    public Despliegue(Ambito ambito, ArrayList<Expresion> expresiones){
-        super(ambito);
+    public Despliegue(ArrayList<Expresion> expresiones){
         this.expresiones = expresiones;
     }
+    
+    @Override
+    public String generarCodigo() {
+        String codigo = super.generarCodigo();
+        String valores = "";
+        codigo += "printf(\"";
+        for(Expresion expresion: expresiones){
+            codigo += Expresion.getFormat(expresion.tipo) + " ";
+            valores += "," + expresion.valor;        
+        }
+        codigo = codigo.substring(0, codigo.length()) + "\\n\"" + 
+                 valores + ");";
+        return codigo;
+    }
+    
+    
 }

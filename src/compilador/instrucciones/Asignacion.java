@@ -13,13 +13,18 @@ import compilador.Identificador;
  * @author diego
  */
 public class Asignacion extends Nodo{
-
-    public Asignacion(Ambito ambito) {
-        super(ambito);
+    private Expresion variable, expresion;
+    public Asignacion() {
+        
     }
     
-    public Asignacion(Ambito ambito, Identificador identificador, Expresion exp){
-        super(ambito);
-        
+    public Asignacion(Expresion variable, Expresion expresion){
+        this.variable = variable;
+        this.expresion = expresion;
+    }
+    
+    @Override
+    public String generarCodigo(){
+        return super.generarCodigo() + variable.valor + " = " + expresion.valor + ";";
     }
 }

@@ -6,6 +6,7 @@
 
 package compilador;
 
+import compilador.instrucciones.Nodo;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,6 +19,7 @@ import java.util.logging.Logger;
 import java_cup.runtime.*;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -161,6 +163,7 @@ public class jfMain extends javax.swing.JFrame {
         Reader reader;
         jfMain obj = this;
         jList1.removeAll();
+        jList1.updateUI();
         final DefaultListModel listModel = new DefaultListModel();
         try {
             reader = new BufferedReader(new FileReader("tempFile.txt"));
@@ -184,14 +187,31 @@ public class jfMain extends javax.swing.JFrame {
                 }
             });
                 
-            System.out.println(analizadorSintactico.parse());
+            Nodo AST = (Nodo) analizadorSintactico.parse().value;
             
             if(analizadorSintactico.correcto){
                 listModel.addElement("Estructura sintactica correcta");
+                String codigo = "#include <stdio.h>\n" + AST.generarCodigo();
+                JFileChooser chooser = new JFileChooser();
+                chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                
+                if(chooser.showDialog(this, null) == JFileChooser.APPROVE_OPTION){
+                    String fileName = JOptionPane.showInputDialog(this, "Ingrese el nombre del archivo");
+                    
+                    fichero = new File (chooser.getSelectedFile() + "/" + fileName + ".c" );
+                    writer = new PrintWriter(fichero);
+                    writer.print(codigo);
+                    writer.close();
+                    
+                    JOptionPane.showMessageDialog(this, "Archivo " + fileName+ ".c generado en " + chooser.getSelectedFile());
+                }
             }else{
                 listModel.addElement("Error en analisis sintactico");
             }
                 
+            jList1.setModel(listModel);
+        } catch (SemanticException ex){
+            listModel.addElement("Error semantico en linea " + (ex.token.left + 1) +":" + ex.getMessage());
             jList1.setModel(listModel);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(jfMain.class.getName()).log(Level.SEVERE, null, ex);

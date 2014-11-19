@@ -105,8 +105,8 @@ O | o 		 						{ return newToken(sym.OR, "OR"); }
 Y | y			 						{ return newToken(sym.AND, "AND"); }
 
 /*  */
-{ENTERO}    	 { return newToken(sym.ENTERO, "ENTERO", yytext()); }
-{FLOAT}    	 	 { return newToken(sym.FLOTANTE, "FLOTANTE", yytext()); }
+{ENTERO}    	 { return newToken(sym.ENTERO, "ENTERO", new Integer(yytext())); }
+{FLOAT}    	 	 { return newToken(sym.FLOTANTE, "FLOTANTE", new Float(yytext())); }
 {CHAR}    	 	 { return newToken(sym.CARACTER, "CARACTER", yytext()); }
 {BOOL}    	 	 { return newToken(sym.BOOLEANO, "BOOLEANO", yytext().toUpperCase()); }
 {CADENA}			 { return newToken(sym.CADENA, "CADENA", yytext()); }
@@ -121,8 +121,8 @@ Y | y			 						{ return newToken(sym.AND, "AND"); }
 "("             { return newToken(sym.PAR_IZQ, "PAR_IZQ"); }
 ")"             { return newToken(sym.PAR_DER, "PAR_DER"); }
 "="             { return newToken(sym.OP_IGUAL, "OP_IGUAL"); }
-"<"             { return newToken(sym.COMP_MAYOR, "COMP_MAYOR"); }
-">"             { return newToken(sym.COMP_MENOR, "COMP_MENOR"); }
+"<"             { return newToken(sym.COMP_MENOR, "COMP_MAYOR"); }
+">"             { return newToken(sym.COMP_MAYOR, "COMP_MENOR"); }
 "<="            { return newToken(sym.COMP_MENOR_IGUAL, "COMP_MENOR_IGUAL"); }
 ">="            { return newToken(sym.COMP_MAYOR_IGUAL, "COMP_MAYOR_IGUAL"); }
 "!="            { return newToken(sym.COMP_DIFERENTE, "COMP_DIFERENTE"); }

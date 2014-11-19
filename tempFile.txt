@@ -4,22 +4,18 @@ COMENTA Distribuir una bonificacion FIN_COM
 
 INICIO
 
+DECLARAR mensaje CARACTER
 DECLARAR bonificacion FLOTANTE
 DECLARAR nparticipantes, resultado FLOTANTE
 
-DESPLEGAR "Digite valores"
+DESPLEGAR "digite participantes"
 LEER bonificacion, nparticipantes
-
+mensaje='k'
 SI nparticipantes = 0
 DESPLEGAR "numero de participantes es cero"
 DESPLEGAR "**error**"
 FIN_SI
 
 resultado=bonificacion/nparticipantes
-DESPLEGAR resultado
-FIN
-
-MODULO nombre RECIBE argumento (ENTERO) DEVUELVE ENTERO
-INICIO
-DESPLEGAR "HOLA"
+DESPLEGAR mensaje, resultado
 FIN

@@ -1015,7 +1015,7 @@ public class AnalizadorLexico implements java_cup.runtime.Scanner {
           }
         case 53: break;
         case 3: 
-          { return newToken(sym.ENTERO, "ENTERO", yytext());
+          { return newToken(sym.ENTERO, "ENTERO", new Integer(yytext()));
           }
         case 54: break;
         case 4: 
@@ -1063,11 +1063,11 @@ public class AnalizadorLexico implements java_cup.runtime.Scanner {
           }
         case 65: break;
         case 15: 
-          { return newToken(sym.COMP_MAYOR, "COMP_MAYOR");
+          { return newToken(sym.COMP_MENOR, "COMP_MAYOR");
           }
         case 66: break;
         case 16: 
-          { return newToken(sym.COMP_MENOR, "COMP_MENOR");
+          { return newToken(sym.COMP_MAYOR, "COMP_MENOR");
           }
         case 67: break;
         case 17: 
@@ -1079,7 +1079,7 @@ public class AnalizadorLexico implements java_cup.runtime.Scanner {
           }
         case 69: break;
         case 19: 
-          { return newToken(sym.FLOTANTE, "FLOTANTE", yytext());
+          { return newToken(sym.FLOTANTE, "FLOTANTE", new Float(yytext()));
           }
         case 70: break;
         case 20: 

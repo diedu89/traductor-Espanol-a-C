@@ -18,18 +18,19 @@ public class Ambito {
     
     public Ambito(Ambito padre){
         this.padre = padre;
-        tablaSimbolos = new HashMap();
+        this.tablaSimbolos = new HashMap();
     }
     
     public void put(String id, Identificador value){
         tablaSimbolos.put(id, value);
     }
     
-    public Identificador get(String id){
+    public Identificador get(String id, Boolean propagar){
         Ambito ambito = this;
         while(ambito != null){
-            if(ambito.get(id) != null) return ambito.get(id);
-            ambito = ambito.padre;
+            if(tablaSimbolos.get(id) != null) return tablaSimbolos.get(id);
+            if(propagar) ambito = ambito.padre;
+            else return null;
         }
         return null;
     }

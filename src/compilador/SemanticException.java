@@ -5,12 +5,16 @@
  */
 package compilador;
 
+import java_cup.runtime.Symbol;
+
 /**
  *
  * @author diego
  */
 public class SemanticException extends Exception{
-    public SemanticException(String mensaje){
+    public Symbol token;
+    public SemanticException(String mensaje, Symbol currentSymbol){
         super(mensaje);
+        token = currentSymbol;
     }
 }
