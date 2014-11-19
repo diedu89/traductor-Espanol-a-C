@@ -28,7 +28,9 @@ public class Ambito {
     public Identificador get(String id, Boolean propagar){
         Ambito ambito = this;
         while(ambito != null){
-            if(tablaSimbolos.get(id) != null) return tablaSimbolos.get(id);
+            if(ambito.tablaSimbolos.get(id) != null) 
+                return ambito.tablaSimbolos.get(id);
+            
             if(propagar) ambito = ambito.padre;
             else return null;
         }
