@@ -1,15 +1,20 @@
-PROGRAMA suma
+PROGRAMA distibucion
+
+COMENTA Distribuir una bonificacion FIN_COM
+
 INICIO
-COMENTA suma de dos numeros FIN_COM
 
-DECLARAR numa, hola ENTERO
+DECLARAR bonificacion FLOTANTE
+DECLARAR nparticipantes, resultado entero
 
-MIENTRAS hola<5
-LEER numa
-FIN_MIENTRAS
+leer resultado
+LEER bonificacion, nparticipantes
 
-DECLARAR res ENTERO
+SI nparticipantes = 0
+DESPLEGAR "numero de participantes es cero"
+DESPLEGAR "**error**"
+FIN_SI
 
-DESPLEGAR res
-
+resultado=bonificacion/nparticipantes
+DESPLEGAR resultado
 FIN

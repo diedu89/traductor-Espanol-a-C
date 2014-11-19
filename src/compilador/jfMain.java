@@ -94,6 +94,11 @@ public class jfMain extends javax.swing.JFrame {
         jMenu5.add(jMenuItem1);
 
         jMenuItem2.setText("Salir");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
         jMenu5.add(jMenuItem2);
 
         jMenuBar.add(jMenu5);
@@ -186,6 +191,7 @@ public class jfMain extends javax.swing.JFrame {
                     listModel.addElement("Error sintactico linea("+ cur_token.left +") columna("+cur_token.right+") token actual: " + tokenName + "-" + cur_token.value);
                 }
             });
+            
                 
             Nodo AST = (Nodo) analizadorSintactico.parse().value;
             
@@ -213,14 +219,25 @@ public class jfMain extends javax.swing.JFrame {
         } catch (SemanticException ex){
             listModel.addElement("Error semantico en linea " + (ex.token.left + 1) +":" + ex.getMessage());
             jList1.setModel(listModel);
+        } catch (SyntacticException ex){
+            listModel.addElement(ex.getMessage());
+            //listModel.addElement("Error sintactico en linea " + (ex.token.left + 1) + " con token " + sym.terminalNames[(int)ex.token.value]);
+            jList1.setModel(listModel);
         } catch (FileNotFoundException ex) {
+            System.out.println("filenotfoundexception");
             Logger.getLogger(jfMain.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
+            System.out.println("ioexception");
             Logger.getLogger(jfMain.class.getName()).log(Level.SEVERE, null, ex);
         }catch (Exception ex) {
+            System.out.println("exception");
             Logger.getLogger(jfMain.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     /**
      * @param args the command line arguments

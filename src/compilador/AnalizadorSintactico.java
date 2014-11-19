@@ -470,11 +470,11 @@ public class AnalizadorSintactico extends java_cup.runtime.lr_parser {
 	public void syntax_error(Symbol cur_token){
 		correcto = false;
 		listener.errorSintaxis(cur_token, symbl_name_from_id(cur_token.sym));
-		System.err.println("Error con token: " + symbl_name_from_id(cur_token.sym));
+		report_expected_token_ids();
 	}
 
 	/* Reporte de error encontrado. */
-	public void report_error(String message, Object info) {
+	public void report_error(String message, Object info){
 	  StringBuilder m = new StringBuilder("Error");
 	  if (info instanceof java_cup.runtime.Symbol) {
 	      java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
@@ -483,10 +483,21 @@ public class AnalizadorSintactico extends java_cup.runtime.lr_parser {
 	          if (s.right >= 0)
 	              m.append(", column "+(s.right+1));
 	      }
+
+		  // List<Integer> ids = expected_token_ids();
+		  // LinkedList<String> list = new LinkedList<String>();
+		  // for (Integer expected : ids){
+			 //  list.add(symbl_name_from_id(expected));
+		  // }
+
+		  // System.out.println("instead expected token classes are "+list);
+
+		  throw new SyntacticException("No se pudo continuar el analisis sintactico debido a un error", s);
 	  }
-	  m.append(" : "+message);
-	  System.err.println(m);
-	  System.err.println(info);
+
+	  // m.append(" : "+message);
+	  // System.err.println(m);
+	  // System.err.println(info);
 	}
 
 	/* Cuando se encuentra un error de donde el sistema no puede
