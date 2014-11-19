@@ -5,9 +5,9 @@ COMENTA Distribuir una bonificacion FIN_COM
 INICIO
 
 DECLARAR bonificacion FLOTANTE
-DECLARAR nparticipantes, resultado entero
+DECLARAR nparticipantes, resultado FLOTANTE
 
-leer resultado
+DESPLEGAR "Digite valores"
 LEER bonificacion, nparticipantes
 
 SI nparticipantes = 0
@@ -17,4 +17,14 @@ FIN_SI
 
 resultado=bonificacion/nparticipantes
 DESPLEGAR resultado
+FIN
+
+MODULO nombre RECIBE argumento (ENTERO) DEVUELVE ENTERO
+INICIO
+DESPLEGAR "HOLA"
+FIN
+
+MODULO nombre2 RECIBE argumento (ENTERO) DEVUELVE ENTERO
+INICIO
+DESPLEGAR "HOLA"
 FIN

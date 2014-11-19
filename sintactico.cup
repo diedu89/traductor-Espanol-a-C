@@ -12,6 +12,7 @@ parser code {:
 	private SintacticoListener listener = null;
 	private String tipo = "";
    private Ambito ambito;
+   private ArrayList<Expresion> argumentosEnCola;
 
 	public void addListener(SintacticoListener listener){
 		this.listener = listener;
@@ -34,20 +35,12 @@ parser code {:
 	              m.append(", column "+(s.right+1));
 	      }
 
-		  // List<Integer> ids = expected_token_ids();
-		  // LinkedList<String> list = new LinkedList<String>();
-		  // for (Integer expected : ids){
-			 //  list.add(symbl_name_from_id(expected));
-		  // }
-
-		  // System.out.println("instead expected token classes are "+list);
-
 		  throw new SyntacticException("No se pudo continuar el analisis sintactico debido a un error", s);
 	  }
 
-	  // m.append(" : "+message);
-	  // System.err.println(m);
-	  // System.err.println(info);
+	  m.append(" : "+message);
+	  System.out.println(m);
+	  System.out.println(info);
 	}
 
 	/* Cuando se encuentra un error de donde el sistema no puede
@@ -102,9 +95,12 @@ parser code {:
 	}
 
 	private Expresion expresionCondicional(Expresion op1, String operador, Expresion op2) throws SemanticException {
-	  if( !(op1.tipo.equals("BOOLEANO") && op2.tipo.equals("BOOLEANO")) )
-	      throw new SemanticException("El operador " + operador + " no puede aplicarse a un tipo de dato CADENA" , this.cur_token);
-	  
+	  if( !(op1.tipo.equals("BOOLEANO") ) )
+	      throw new SemanticException("El operador " + operador + " no puede aplicarse a un tipo de dato " + op1.tipo , this.cur_token);
+
+	  if( !(op2.tipo.equals("BOOLEANO") ) )
+	      throw new SemanticException("El operador " + operador + " no puede aplicarse a un tipo de dato " + op2.tipo , this.cur_token); 
+
 	  return new Expresion(op1.valor + " " + operador + " " + op2.valor, "BOOLEANO");
 	}
 
@@ -124,9 +120,10 @@ parser code {:
 
 init with {:
 	ambito = new Ambito(null);
+	argumentosEnCola = null;
 :}
 
-non terminal PROGRAMA, MODULO, ARGUMENTOS, ARGUMENTO, BLOQUE, COMENTARIO, INSTRUCCIONES, INSTRUCCION, IF, IFELSE, FOR, MIENTRAS_T, DECLARACION, CONSTANTE_NUM, IDENTIFICADORES, EXPRESION, VARIABLE, VARIABLES, ASIGNACION, CONDICIONAL_Y, EXP_IGUALDAD, EXP_RELACIONAL, EXP_ADICION, OP_ADICION, EXP_MUL, OP_MUL, EXP_PRIMARIA, LECTURA, DESPLIEGUE, EXPRESIONES;
+non terminal PROGRAMA, MODULO, MODULOS, ARGUMENTOS, ARGUMENTO, BLOQUE, COMENTARIO, INSTRUCCIONES, INSTRUCCION, IF, IFELSE, FOR, MIENTRAS_T, DECLARACION, CONSTANTE_NUM, IDENTIFICADORES, EXPRESION, VARIABLE, VARIABLES, ASIGNACION, CONDICIONAL_Y, EXP_IGUALDAD, EXP_RELACIONAL, EXP_ADICION, OP_ADICION, EXP_MUL, OP_MUL, EXP_PRIMARIA, LECTURA, DESPLIEGUE, EXPRESIONES;
 
 terminal TIPO, IDENTIFICADOR, CADENA, CONT_COMENT;
 terminal Integer ENTERO;
@@ -138,21 +135,77 @@ terminal PROGRAMA_K,  INICIO_BLOQUE,  FIN_BLOQUE,  INICIO_COMENTARIO,  FIN_COMEN
 
 start with PROGRAMA;
 
-PROGRAMA 		::= 	PROGRAMA_K IDENTIFICADOR BLOQUE:b {: RESULT = new Funcion("main", (Bloque) b, "void"); :}
-					| 		PROGRAMA_K IDENTIFICADOR BLOQUE MODULO
+PROGRAMA 		::= 	PROGRAMA_K IDENTIFICADOR BLOQUE:b 
+							{: 
+								RESULT = new Programa( new Funcion("main", (Bloque) b, "ENTERO") ); 
+							:}
+					| 		PROGRAMA_K IDENTIFICADOR BLOQUE:b MODULOS:m 
+							{: 
+								ArrayList<Funcion> funciones = (ArrayList<Funcion>)m;
+								funciones.add(0, new Funcion("main", (Bloque) b, "ENTERO") );
+								RESULT = new Programa(funciones);
+							:}
 					;
 
-MODULO			::= 	MODULO_K IDENTIFICADOR RECIBE ARGUMENTOS DEVUELVE TIPO BLOQUE
+MODULOS			::=	MODULO:m 				
+							{:  
+								ArrayList<Funcion> funciones = new ArrayList<Funcion>();
+								funciones.add((Funcion)m);
+								RESULT = funciones;
+							:}
+					|		MODULOS:ms MODULO:m	
+							{:  
+								((ArrayList<Funcion> )ms).add((Funcion)m);
+								RESULT = ms;
+							:}
 					;
 
-ARGUMENTOS		::= 	ARGUMENTO 
-					| 		ARGUMENTOS COMA ARGUMENTO
+MODULO			::= 	MODULO_K IDENTIFICADOR:id RECIBE ARGUMENTOS:args DEVUELVE TIPO:t 
+							{:
+								if(ambito.get((String) id, false) != null)
+									throw new SemanticException("Funcion " + ( (String) id ) + " ya fue declarada en el ambito actual" , this.parser.cur_token);
+
+								argumentosEnCola = (ArrayList<Expresion>) args;
+								ambito.put((String)id,new Identificador((String)id, (String) t, argumentosEnCola) );
+							:}
+							BLOQUE:b
+							{:
+								RESULT = new Funcion( (String) id, (Bloque) b, (String) t, (ArrayList<Expresion>) args);
+							:}
 					;
 
-ARGUMENTO		::= 	IDENTIFICADOR PAR_IZQ TIPO PAR_DER
+ARGUMENTOS		::= 	ARGUMENTO:arg 
+							{:
+								ArrayList<Expresion> args = new ArrayList<Expresion>();
+								args.add((Expresion) arg);
+								RESULT = args;
+							:}
+					| 		ARGUMENTOS:args COMA ARGUMENTO:arg
+							{:
+								ArrayList<Expresion> argumentos =  (ArrayList<Expresion>)args;
+								for(Expresion argumento: argumentos){
+									if(argumento.valor.equals( ((Expresion)arg).valor ) )
+										throw new SemanticException("El argumento " + argumento.valor + " ya fue declarado en la lista de argumentos ", this.parser.cur_token);
+								}
+
+								argumentos.add((Expresion) arg);
+								RESULT = argumentos;
+							:}
 					;
 
-BLOQUE 			::= 	INICIO_BLOQUE 			{: ambito = new Ambito(ambito); :} 
+ARGUMENTO		::= 	IDENTIFICADOR:id PAR_IZQ TIPO:t PAR_DER	{: RESULT = new Expresion((String)id, (String)t); :}
+					;
+
+BLOQUE 			::= 	INICIO_BLOQUE 			
+							{: 
+								ambito = new Ambito(ambito); 
+								//se guardan en el ambito actual los argumentos
+								if(argumentosEnCola != null){
+									for(Expresion argumento:argumentosEnCola)
+										ambito.put((String) argumento.valor, new Identificador(argumento.valor, argumento.tipo));
+									argumentosEnCola = null;
+								}
+							:} 
 							INSTRUCCIONES:ins 	{: RESULT = new Bloque((ArrayList<Nodo>) ins); :} 
 							FIN_BLOQUE 				{: ambito = ambito.padre; :}
 					| 		COMENTARIO BLOQUE:b 	{: RESULT = b; :} 

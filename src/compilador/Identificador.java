@@ -5,6 +5,7 @@
  */
 package compilador;
 
+import compilador.instrucciones.Expresion;
 import java.util.ArrayList;
 
 /**
@@ -17,7 +18,7 @@ public class Identificador {
     public String identificador;
     public int columnas;
     public int filas;
-    public ArrayList<Identificador> argumentos;
+    public ArrayList<Expresion> argumentos;
     public Boolean init;
     
     public Identificador(String identificador, String tipoDato){
@@ -40,7 +41,7 @@ public class Identificador {
         this.columnas = columnas;
     }
     
-    public Identificador(String identificador, String tipoDato, ArrayList<Identificador> identificadores){
+    public Identificador(String identificador, String tipoDato, ArrayList<Expresion> identificadores){
         this(identificador, tipoDato);
         this.tipoId = "funcion";
         this.argumentos = identificadores;
