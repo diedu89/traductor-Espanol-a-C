@@ -3,9 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/diego/Documentos/DesarrolloJava/Compilador/src/compilador/SyntacticException.java</file>
-            <file>file:/home/diego/Documentos/DesarrolloJava/Compilador/src/compilador/sym.java</file>
-            <file>file:/home/diego/Documentos/DesarrolloJava/Compilador/src/compilador/jfMain.java</file>
+            <file>file:/home/diego/Documentos/DesarrolloJava/Compilador/src/compilador/instrucciones/Funcion.java</file>
+            <file>file:/home/diego/Documentos/DesarrolloJava/Compilador/src/compilador/Identificador.java</file>
             <file>file:/home/diego/Documentos/DesarrolloJava/Compilador/src/compilador/AnalizadorSintactico.java</file>
         </group>
     </open-files>
