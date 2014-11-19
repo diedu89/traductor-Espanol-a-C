@@ -83,7 +83,7 @@ public class AnalizadorSintactico extends java_cup.runtime.lr_parser {
     "\022\uffec\032\uffec\033\uffec\034\uffec\035\uffec\037\uffec\040" +
     "\uffec\041\uffec\001\002\000\024\005\033\015\ufff6\016\012" +
     "\020\017\021\023\022\026\032\032\035\034\040\037\001" +
-    "\002\000\020\005\033\006\040\010\045\011\047\012\042" +
+    "\002\000\020\005\033\006\040\010\042\011\045\012\047" +
     "\031\056\047\043\001\002\000\004\042\166\001\002\000" +
     "\034\005\ufff0\015\ufff0\016\ufff0\020\ufff0\021\ufff0\022\ufff0" +
     "\032\ufff0\033\ufff0\034\ufff0\035\ufff0\037\ufff0\040\ufff0\041" +
@@ -95,7 +95,7 @@ public class AnalizadorSintactico extends java_cup.runtime.lr_parser {
     "\037\uffeb\040\uffeb\041\uffeb\001\002\000\034\005\ufff1\015" +
     "\ufff1\016\ufff1\020\ufff1\021\ufff1\022\ufff1\032\ufff1\033\ufff1" +
     "\034\ufff1\035\ufff1\037\ufff1\040\ufff1\041\ufff1\001\002\000" +
-    "\020\005\033\006\040\010\045\011\047\012\042\031\056" +
+    "\020\005\033\006\040\010\042\011\045\012\047\031\056" +
     "\047\043\001\002\000\072\005\uffc4\015\uffc4\016\uffc4\020" +
     "\uffc4\021\uffc4\022\uffc4\023\uffc4\032\uffc4\033\uffc4\034\uffc4" +
     "\035\uffc4\037\uffc4\040\uffc4\041\uffc4\042\uffc4\043\uffc4\044" +
@@ -105,8 +105,8 @@ public class AnalizadorSintactico extends java_cup.runtime.lr_parser {
     "\021\023\022\026\032\032\035\034\040\037\001\002\000" +
     "\034\005\uffee\015\uffee\016\uffee\020\uffee\021\uffee\022\uffee" +
     "\032\uffee\033\uffee\034\uffee\035\uffee\037\uffee\040\uffee\041" +
-    "\uffee\001\002\000\020\005\033\006\040\010\045\011\047" +
-    "\012\042\031\056\047\043\001\002\000\070\005\uffc7\015" +
+    "\uffee\001\002\000\020\005\033\006\040\010\042\011\045" +
+    "\012\047\031\056\047\043\001\002\000\070\005\uffc7\015" +
     "\uffc7\016\uffc7\020\uffc7\021\uffc7\022\uffc7\023\uffc7\032\uffc7" +
     "\033\uffc7\034\uffc7\035\uffc7\037\uffc7\040\uffc7\041\uffc7\042" +
     "\uffc7\043\uffc7\044\uffc7\045\uffc7\046\uffc7\050\uffc7\053\uffc7" +
@@ -119,7 +119,7 @@ public class AnalizadorSintactico extends java_cup.runtime.lr_parser {
     "\035\uffc5\037\uffc5\040\uffc5\041\uffc5\042\uffc5\043\uffc5\044" +
     "\uffc5\045\uffc5\046\uffc5\050\uffc5\053\uffc5\054\uffc5\055\uffc5" +
     "\056\uffc5\057\uffc5\060\uffc5\061\uffc5\001\002\000\020\005" +
-    "\033\006\040\010\045\011\047\012\042\031\056\047\043" +
+    "\033\006\040\010\042\011\045\012\047\031\056\047\043" +
     "\001\002\000\060\005\uffda\015\uffda\016\uffda\020\uffda\021" +
     "\uffda\022\uffda\023\uffda\032\uffda\033\uffda\034\uffda\035\uffda" +
     "\037\uffda\040\uffda\041\uffda\042\uffda\050\uffda\053\uffda\054" +
@@ -166,32 +166,32 @@ public class AnalizadorSintactico extends java_cup.runtime.lr_parser {
     "\uffc6\055\uffc6\056\uffc6\057\uffc6\060\uffc6\061\uffc6\001\002" +
     "\000\022\005\033\016\012\020\017\021\023\022\026\032" +
     "\032\035\034\040\037\001\002\000\020\005\033\006\040" +
-    "\010\045\011\047\012\042\031\056\047\043\001\002\000" +
+    "\010\042\011\045\012\047\031\056\047\043\001\002\000" +
     "\044\005\uffdd\015\uffdd\016\uffdd\020\uffdd\021\uffdd\022\uffdd" +
     "\023\uffdd\032\uffdd\033\uffdd\034\uffdd\035\uffdd\037\uffdd\040" +
     "\uffdd\041\uffdd\050\uffdd\060\uffdd\061\062\001\002\000\020" +
-    "\005\033\006\040\010\045\011\047\012\042\031\056\047" +
+    "\005\033\006\040\010\042\011\045\012\047\031\056\047" +
     "\043\001\002\000\050\005\uffdb\015\uffdb\016\uffdb\020\uffdb" +
     "\021\uffdb\022\uffdb\023\uffdb\032\uffdb\033\uffdb\034\uffdb\035" +
     "\uffdb\037\uffdb\040\uffdb\041\uffdb\042\065\050\uffdb\053\064" +
     "\060\uffdb\061\uffdb\001\002\000\020\005\033\006\040\010" +
-    "\045\011\047\012\042\031\056\047\043\001\002\000\020" +
-    "\005\033\006\040\010\045\011\047\012\042\031\056\047" +
+    "\042\011\045\012\047\031\056\047\043\001\002\000\020" +
+    "\005\033\006\040\010\042\011\045\012\047\031\056\047" +
     "\043\001\002\000\060\005\uffd9\015\uffd9\016\uffd9\020\uffd9" +
     "\021\uffd9\022\uffd9\023\uffd9\032\uffd9\033\uffd9\034\uffd9\035" +
     "\uffd9\037\uffd9\040\uffd9\041\uffd9\042\uffd9\050\uffd9\053\uffd9" +
     "\054\072\055\067\056\071\057\070\060\uffd9\061\uffd9\001" +
-    "\002\000\020\005\033\006\040\010\045\011\047\012\042" +
+    "\002\000\020\005\033\006\040\010\042\011\045\012\047" +
     "\031\056\047\043\001\002\000\020\005\033\006\040\010" +
-    "\045\011\047\012\042\031\056\047\043\001\002\000\020" +
-    "\005\033\006\040\010\045\011\047\012\042\031\056\047" +
-    "\043\001\002\000\020\005\033\006\040\010\045\011\047" +
-    "\012\042\031\056\047\043\001\002\000\064\005\uffd6\015" +
+    "\042\011\045\012\047\031\056\047\043\001\002\000\020" +
+    "\005\033\006\040\010\042\011\045\012\047\031\056\047" +
+    "\043\001\002\000\020\005\033\006\040\010\042\011\045" +
+    "\012\047\031\056\047\043\001\002\000\064\005\uffd6\015" +
     "\uffd6\016\uffd6\020\uffd6\021\uffd6\022\uffd6\023\uffd6\032\uffd6" +
     "\033\uffd6\034\uffd6\035\uffd6\037\uffd6\040\uffd6\041\uffd6\042" +
     "\uffd6\043\076\044\075\050\uffd6\053\uffd6\054\uffd6\055\uffd6" +
     "\056\uffd6\057\uffd6\060\uffd6\061\uffd6\001\002\000\020\005" +
-    "\033\006\040\010\045\011\047\012\042\031\056\047\043" +
+    "\033\006\040\010\042\011\045\012\047\031\056\047\043" +
     "\001\002\000\020\005\uffcf\006\uffcf\010\uffcf\011\uffcf\012" +
     "\uffcf\031\uffcf\047\uffcf\001\002\000\020\005\uffd0\006\uffd0" +
     "\010\uffd0\011\uffd0\012\uffd0\031\uffd0\047\uffd0\001\002\000" +
@@ -199,8 +199,8 @@ public class AnalizadorSintactico extends java_cup.runtime.lr_parser {
     "\023\uffd1\032\uffd1\033\uffd1\034\uffd1\035\uffd1\037\uffd1\040" +
     "\uffd1\041\uffd1\042\uffd1\043\uffd1\044\uffd1\045\102\046\101" +
     "\050\uffd1\053\uffd1\054\uffd1\055\uffd1\056\uffd1\057\uffd1\060" +
-    "\uffd1\061\uffd1\001\002\000\020\005\033\006\040\010\045" +
-    "\011\047\012\042\031\056\047\043\001\002\000\020\005" +
+    "\uffd1\061\uffd1\001\002\000\020\005\033\006\040\010\042" +
+    "\011\045\012\047\031\056\047\043\001\002\000\020\005" +
     "\uffcb\006\uffcb\010\uffcb\011\uffcb\012\uffcb\031\uffcb\047\uffcb" +
     "\001\002\000\020\005\uffcc\006\uffcc\010\uffcc\011\uffcc\012" +
     "\uffcc\031\uffcc\047\uffcc\001\002\000\070\005\uffcd\015\uffcd" +
@@ -239,15 +239,15 @@ public class AnalizadorSintactico extends java_cup.runtime.lr_parser {
     "\015\ufff2\016\ufff2\020\ufff2\021\ufff2\022\ufff2\032\ufff2\033" +
     "\ufff2\034\ufff2\035\ufff2\037\ufff2\040\ufff2\041\ufff2\001\002" +
     "\000\004\005\117\001\002\000\004\042\uffbe\001\002\000" +
-    "\004\042\121\001\002\000\004\010\122\001\002\000\004" +
-    "\036\123\001\002\000\004\010\124\001\002\000\022\005" +
+    "\004\042\121\001\002\000\004\011\122\001\002\000\004" +
+    "\036\123\001\002\000\004\011\124\001\002\000\022\005" +
     "\033\016\012\020\017\021\023\022\026\032\032\035\034" +
     "\040\037\001\002\000\024\005\033\016\012\020\017\021" +
     "\023\022\026\032\032\035\034\037\126\040\037\001\002" +
     "\000\034\005\uffbd\015\uffbd\016\uffbd\020\uffbd\021\uffbd\022" +
     "\uffbd\032\uffbd\033\uffbd\034\uffbd\035\uffbd\037\uffbd\040\uffbd" +
-    "\041\uffbd\001\002\000\004\010\130\001\002\000\006\023" +
-    "\131\052\132\001\002\000\004\010\133\001\002\000\070" +
+    "\041\uffbd\001\002\000\004\011\130\001\002\000\006\023" +
+    "\131\052\132\001\002\000\004\011\133\001\002\000\070" +
     "\005\uffc3\015\uffc3\016\uffc3\020\uffc3\021\uffc3\022\uffc3\023" +
     "\uffc3\032\uffc3\033\uffc3\034\uffc3\035\uffc3\037\uffc3\040\uffc3" +
     "\041\uffc3\042\uffc3\043\uffc3\044\uffc3\045\uffc3\046\uffc3\050" +
@@ -271,20 +271,20 @@ public class AnalizadorSintactico extends java_cup.runtime.lr_parser {
     "\037\uffc0\040\uffc0\041\uffc0\001\002\000\004\005\161\001" +
     "\002\000\006\004\uffe3\023\uffe3\001\002\000\006\004\157" +
     "\023\156\001\002\000\004\005\147\001\002\000\004\051" +
-    "\150\001\002\000\004\010\151\001\002\000\004\023\152" +
-    "\001\002\000\004\010\153\001\002\000\004\052\154\001" +
+    "\150\001\002\000\004\011\151\001\002\000\004\023\152" +
+    "\001\002\000\004\011\153\001\002\000\004\052\154\001" +
     "\002\000\004\004\155\001\002\000\034\005\uffe5\015\uffe5" +
     "\016\uffe5\020\uffe5\021\uffe5\022\uffe5\032\uffe5\033\uffe5\034" +
     "\uffe5\035\uffe5\037\uffe5\040\uffe5\041\uffe5\001\002\000\004" +
     "\005\160\001\002\000\034\005\uffe7\015\uffe7\016\uffe7\020" +
     "\uffe7\021\uffe7\022\uffe7\032\uffe7\033\uffe7\034\uffe7\035\uffe7" +
     "\037\uffe7\040\uffe7\041\uffe7\001\002\000\006\004\uffe2\023" +
-    "\uffe2\001\002\000\004\051\162\001\002\000\004\010\163" +
+    "\uffe2\001\002\000\004\051\162\001\002\000\004\011\163" +
     "\001\002\000\004\052\164\001\002\000\004\004\165\001" +
     "\002\000\034\005\uffe6\015\uffe6\016\uffe6\020\uffe6\021\uffe6" +
     "\022\uffe6\032\uffe6\033\uffe6\034\uffe6\035\uffe6\037\uffe6\040" +
-    "\uffe6\041\uffe6\001\002\000\020\005\033\006\040\010\045" +
-    "\011\047\012\042\031\056\047\043\001\002\000\036\005" +
+    "\uffe6\041\uffe6\001\002\000\020\005\033\006\040\010\042" +
+    "\011\045\012\047\031\056\047\043\001\002\000\036\005" +
     "\uffdf\015\uffdf\016\uffdf\020\uffdf\021\uffdf\022\uffdf\032\uffdf" +
     "\033\uffdf\034\uffdf\035\uffdf\037\uffdf\040\uffdf\041\uffdf\060" +
     "\060\001\002\000\036\005\uffb9\015\uffb9\016\uffb9\020\uffb9" +
@@ -292,8 +292,8 @@ public class AnalizadorSintactico extends java_cup.runtime.lr_parser {
     "\uffb9\037\uffb9\040\uffb9\041\uffb9\001\002\000\040\005\uffb8" +
     "\015\uffb8\016\uffb8\020\uffb8\021\uffb8\022\uffb8\023\uffb8\032" +
     "\uffb8\033\uffb8\034\uffb8\035\uffb8\037\uffb8\040\uffb8\041\uffb8" +
-    "\060\060\001\002\000\020\005\033\006\040\010\045\011" +
-    "\047\012\042\031\056\047\043\001\002\000\040\005\uffb7" +
+    "\060\060\001\002\000\020\005\033\006\040\010\042\011" +
+    "\045\012\047\031\056\047\043\001\002\000\040\005\uffb7" +
     "\015\uffb7\016\uffb7\020\uffb7\021\uffb7\022\uffb7\023\uffb7\032" +
     "\uffb7\033\uffb7\034\uffb7\035\uffb7\037\uffb7\040\uffb7\041\uffb7" +
     "\060\060\001\002\000\004\015\175\001\002\000\006\002" +
@@ -302,8 +302,8 @@ public class AnalizadorSintactico extends java_cup.runtime.lr_parser {
     "\uffbc\035\uffbc\037\uffbc\040\uffbc\041\uffbc\001\002\000\036" +
     "\005\uffb6\015\uffb6\016\uffb6\020\uffb6\021\uffb6\022\uffb6\023" +
     "\uffb6\032\uffb6\033\uffb6\034\uffb6\035\uffb6\037\uffb6\040\uffb6" +
-    "\041\uffb6\001\002\000\020\005\033\006\040\010\045\011" +
-    "\047\012\042\031\056\047\043\001\002\000\040\005\uffb5" +
+    "\041\uffb6\001\002\000\020\005\033\006\040\010\042\011" +
+    "\045\012\047\031\056\047\043\001\002\000\040\005\uffb5" +
     "\015\uffb5\016\uffb5\020\uffb5\021\uffb5\022\uffb5\023\uffb5\032" +
     "\uffb5\033\uffb5\034\uffb5\035\uffb5\037\uffb5\040\uffb5\041\uffb5" +
     "\060\060\001\002\000\004\017\203\001\002\000\030\002" +
@@ -512,7 +512,7 @@ public class AnalizadorSintactico extends java_cup.runtime.lr_parser {
 		}
 
 		if( !tipo.equals("") && !( id.tipoId.equals(tipo) ) ){
-			throw new SemanticException("El identificador corresponde a un dato " + id.tipoId, this.cur_token);
+			throw new SemanticException("El identificador " + id.identificador + " corresponde a un dato " + id.tipoId, this.cur_token);
 		}
 
 		return id;
@@ -1499,8 +1499,8 @@ class CUP$AnalizadorSintactico$actions {
               Object RESULT =null;
 		int bleft = ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico$stack.peek()).right;
-		Boolean b = (Boolean)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico$stack.peek()).value;
-		 RESULT = new Expresion((b)?"1":"0","BOOLEANO"); 
+		Object b = (Object)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico$stack.peek()).value;
+		 RESULT = new Expresion((b.equals("TRUE"))?"true":"false","BOOLEANO"); 
               CUP$AnalizadorSintactico$result = parser.getSymbolFactory().newSymbol("EXP_PRIMARIA",27, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico$stack.peek()), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico$stack.peek()), RESULT);
             }
           return CUP$AnalizadorSintactico$result;

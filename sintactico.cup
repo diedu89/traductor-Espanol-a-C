@@ -57,7 +57,7 @@ parser code {:
 		}
 
 		if( !tipo.equals("") && !( id.tipoId.equals(tipo) ) ){
-			throw new SemanticException("El identificador corresponde a un dato " + id.tipoId, this.cur_token);
+			throw new SemanticException("El identificador " + id.identificador + " corresponde a un dato " + id.tipoId, this.cur_token);
 		}
 
 		return id;
@@ -125,10 +125,9 @@ init with {:
 
 non terminal PROGRAMA, MODULO, MODULOS, ARGUMENTOS, ARGUMENTO, BLOQUE, COMENTARIO, INSTRUCCIONES, INSTRUCCION, IF, IFELSE, FOR, MIENTRAS_T, DECLARACION, CONSTANTE_NUM, IDENTIFICADORES, EXPRESION, VARIABLE, VARIABLES, ASIGNACION, CONDICIONAL_Y, EXP_IGUALDAD, EXP_RELACIONAL, EXP_ADICION, OP_ADICION, EXP_MUL, OP_MUL, EXP_PRIMARIA, LECTURA, DESPLIEGUE, EXPRESIONES;
 
-terminal TIPO, IDENTIFICADOR, CADENA, CONT_COMENT;
+terminal TIPO, IDENTIFICADOR, CADENA, CONT_COMENT, BOOLEANO;
 terminal Integer ENTERO;
 terminal Float FLOTANTE;
-terminal Boolean BOOLEANO;
 
 /* keywords */
 terminal PROGRAMA_K,  INICIO_BLOQUE,  FIN_BLOQUE,  INICIO_COMENTARIO,  FIN_COMENTARIO,  LEER,  DESPLEGAR, DECLARAR, COMA, MODULO_K, RECIBE, DEVUELVE, VECTOR, MATRIZ, CARACTER, SI, SINO, FIN_SI, DESDE, HASTA, FIN_DESDE, MIENTRAS, FIN_MIENTRAS, OP_IGUAL, OP_MAS, OP_MENOS, OP_POR, OP_DIV, PAR_IZQ, PAR_DER, CORCHETE_IZQ, CORCHETE_DER , COMP_DIFERENTE, COMP_MAYOR, COMP_MENOR, COMP_MAYOR_IGUAL, COMP_MENOR_IGUAL, OR, AND;
@@ -343,7 +342,7 @@ EXP_PRIMARIA	::=	CONSTANTE_NUM:c 																	{: RESULT = (Expresion) c; :}
 					|		VARIABLE:var																		{: RESULT = (Expresion) var; :}
 					|		CADENA:c																				{: RESULT = new Expresion((String)c,"CADENA"); :}
 					|	 	CARACTER:c 																			{: RESULT = new Expresion((String)c,"CARACTER"); :}
-					|		BOOLEANO:b 																			{: RESULT = new Expresion((b)?"1":"0","BOOLEANO"); :}
+					|		BOOLEANO:b 																			{: RESULT = new Expresion((b.equals("TRUE"))?"true":"false","BOOLEANO"); :}
 					;
 
 VARIABLE			::=	IDENTIFICADOR:id																	

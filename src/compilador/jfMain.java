@@ -20,6 +20,7 @@ import java_cup.runtime.*;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -137,6 +138,8 @@ public class jfMain extends javax.swing.JFrame {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         int result= chooser.showDialog(this, null);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "txt", "text");
+        chooser.setFileFilter(filter);
         if(result == JFileChooser.APPROVE_OPTION){
             System.out.println(chooser.getSelectedFile().getAbsoluteFile());
             try {
@@ -197,7 +200,7 @@ public class jfMain extends javax.swing.JFrame {
             
             if(analizadorSintactico.correcto){
                 listModel.addElement("Estructura sintactica correcta");
-                String codigo = "#include <stdio.h>\n" + AST.generarCodigo();
+                String codigo = "#include <stdio.h>\n#include <stdbool.h>\n" + AST.generarCodigo();
                 JFileChooser chooser = new JFileChooser();
                 chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                 

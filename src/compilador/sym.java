@@ -12,7 +12,7 @@ public class sym {
   public static final int COMP_MENOR_IGUAL = 45;
   public static final int TIPO = 2;
   public static final int DESPLEGAR = 15;
-  public static final int ENTERO = 6;
+  public static final int ENTERO = 7;
   public static final int SI = 24;
   public static final int MATRIZ = 22;
   public static final int DESDE = 27;
@@ -48,12 +48,12 @@ public class sym {
   public static final int INICIO_COMENTARIO = 12;
   public static final int FIN_BLOQUE = 11;
   public static final int LEER = 14;
-  public static final int BOOLEANO = 8;
+  public static final int BOOLEANO = 6;
   public static final int OP_MAS = 33;
   public static final int COMP_MAYOR_IGUAL = 44;
   public static final int FIN_DESDE = 29;
   public static final int CONT_COMENT = 5;
-  public static final int FLOTANTE = 7;
+  public static final int FLOTANTE = 8;
   public static final int OP_POR = 35;
   public static final int OP_MENOS = 34;
   public static final String[] terminalNames = new String[] {
@@ -63,9 +63,9 @@ public class sym {
   "IDENTIFICADOR",
   "CADENA",
   "CONT_COMENT",
+  "BOOLEANO",
   "ENTERO",
   "FLOTANTE",
-  "BOOLEANO",
   "PROGRAMA_K",
   "INICIO_BLOQUE",
   "FIN_BLOQUE",
